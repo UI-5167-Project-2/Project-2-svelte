@@ -1,47 +1,31 @@
-# Svelte + Vite
+# UI Project 2
 
-This template should help get you started developing with Svelte in Vite.
+## Environment Setup
 
-## Recommended IDE Setup
+1. Make sure node version is >= 20.17.0 (use `node -v` to check)
+2. Make sure npm version is >= 10.8.2 (use `npm -v` to check)
+3. Clone this repo to your computer
+4. Navigate to the project-2 folder
+5. Run `npm i` to install node_modules and various packages included in the package.json file
+6. Run `npm run dev` to start the project
+7. Install the prettier extension (this extension ensures consistent code formatting)
+8. Go to settings -> Search 'Default Formatter' -> Select prettier
+9. Go to settings -> Search 'Format on save' -> [x] select
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Consistent styling instructions
 
-## Need an official Svelte framework?
+- We are utilizing bootstrap for this project which includes a majority of classes and styles which will be used for theming, spacing, text formatting, etc.
+- Go to [Bootstrap - Docs](https://getbootstrap.com/docs/5.2/getting-started/introduction/) for information on styling and formatting
+- Go to [Bootstrap - icons](https://icons.getbootstrap.com/) for available icons and implementation
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## Consistent component instructions
 
-## Technical considerations
+- I have built out several components included in the shared components folder, please use these before grabbing componnets from the bootstrap docs as they have been styled consistently and already have built in binding and behaviors configured. Please ask Jordan for assistance as needed
+- For details on what can be brought into each component, check out comment included above each component or included documentation when adding the component to a new area.
 
-**Why use this over SvelteKit?**
+## Building & Deploying
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `checkJs` in the JS template?**
-
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+1. Run `npm run build`
+2. Copy all files and folders from the dist folder into the root of the `UI-5167-Project-2.github.io` repository
+3. Push changes
+4. The public website will automatically regenerate with the latest build files
