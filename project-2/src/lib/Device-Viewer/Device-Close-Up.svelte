@@ -1,22 +1,15 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
-
   // --- Props Received from Parent ---
-  export let buckle3DTransform;
-  export let viewAngleText;
-  export let viewBuckleFrameColor;
-  export let viewBucklePinColor;
-
-  // Dispatcher to send events back to the parent
-  const dispatch = createEventDispatcher();
-
-  // Function to handle button click and dispatch the event
-  const changeBuckleView = (viewId) => {
-    dispatch('changeview', viewId);
-  };
+  let {
+    buckle3DTransform,
+    viewAngleText,
+    viewBuckleFrameColor,
+    viewBucklePinColor,
+    changeBuckleView = null,
+  } = $props();
 </script>
 
-<div class="buckle-viewer">
+<div class="buckle-viewer child-container-body">
   <h2>Buckle Close-up View 🔍</h2>
   <div class="buckle-stage">
     <div id="buckle3D" class="buckle-3d" style="transform: {buckle3DTransform};">
@@ -28,11 +21,11 @@
   <p>Current View Angle: <span>{viewAngleText}</span></p>
   <div class="d-pad-container">
     <div class="d-pad-grid">
-      <button on:click={() => changeBuckleView(1)}>Side (R)</button>
-      <button on:click={() => changeBuckleView(2)}>Top</button>
-      <button on:click={() => changeBuckleView(3)}>Side (L)</button>
-      <button on:click={() => changeBuckleView(4)}>Bottom</button>
-      <button on:click={() => changeBuckleView(5)}>Front</button>
+      <button class="btn btn-warning" onclick={() => changeBuckleView(1)}>Side (R)</button>
+      <button class="btn btn-warning" onclick={() => changeBuckleView(2)}>Top</button>
+      <button class="btn btn-warning" onclick={() => changeBuckleView(3)}>Side (L)</button>
+      <button class="btn btn-warning" onclick={() => changeBuckleView(4)}>Bottom</button>
+      <button class="btn btn-warning" onclick={() => changeBuckleView(5)}>Front</button>
     </div>
   </div>
 </div>
@@ -47,20 +40,17 @@
   }
 
   .buckle-viewer {
-    background-color: #f8f9fa;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
-    padding: 20px;
+    padding: 0.25em;
     text-align: center;
     width: 100%;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     flex: 1; /* Allows it to take equal space */
     min-width: 300px;
   }
 
   .buckle-stage {
     perspective: 1000px;
-    height: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -111,11 +101,6 @@
     gap: 10px;
     width: 250px;
     margin: 0 auto;
-  }
-  .d-pad-grid button {
-    background-color: #e67e22;
-    padding: 8px;
-    font-size: 0.8rem;
   }
   .d-pad-grid button:hover {
     background-color: #d35400;

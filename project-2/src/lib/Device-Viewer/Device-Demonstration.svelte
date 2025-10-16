@@ -1,25 +1,30 @@
 <script>
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
+  import { BeltData, getToday } from '../Data-Store.svelte.js';
 
   // --- Props Received from Parent (App.svelte) ---
-  export let stepsCount;
-  export let stairsCount;
-  export let breathCount;
-  export let breathingRate;
-  export let postureStatus;
-  export let walkButtonText;
-  export let sedentaryButtonText;
-  export let walkButtonDisabled;
-  export let sedentaryButtonDisabled;
-  export let bodyShapeFill;
-  export let pantsShapeFill;
-  export let pantsShapeStroke;
-  export let beltFill;
-  export let buckleFrameFill;
-  export let bucklePinFill;
+  let {
+    stepsCount,
+    stairsCount,
+    breathCount,
+    breathingRate,
+    postureStatus,
+    walkButtonText,
+    sedentaryButtonText,
+    walkButtonDisabled,
+    sedentaryButtonDisabled,
+    bodyShapeFill,
+    pantsShapeFill,
+    pantsShapeStroke,
+    beltFill,
+    buckleFrameFill,
+    bucklePinFill,
+    handleWalk = null,
+    handleSedentary = null,
+    registerElements = null,
+  } = $props();
 
   // --- Internal State & Dispatcher ---
-  const dispatch = createEventDispatcher();
   let animatedElements;
 
   // References to the SVG elements for animation
@@ -93,7 +98,7 @@
   };
 
   // Reactive block to handle animation based on postureStatus changes (simplified)
-  $: {
+  $effect(() => {
     if (postureStatus === 'Walking') {
       startWalkingVisuals();
       startBreathingVisuals();
@@ -114,16 +119,7 @@
     } else if (postureStatus === '❌ Bad Posture/Move!') {
       startBadPostureShake();
     }
-  }
-
-  // --- Event Handlers (Dispatching up to Parent) ---
-  const handleWalk = () => {
-    dispatch('walk');
-  };
-
-  const handleSedentary = () => {
-    dispatch('sedentary');
-  };
+  });
 
   // --- Lifecycle Hooks ---
   onMount(() => {
@@ -132,7 +128,8 @@
       (el) => el !== undefined
     );
     // Send the elements back to the parent so it can control/reference them if needed
-    dispatch('registerelements', animatedElements);
+    // dispatch('registerelements', animatedElements);
+    registerElements(animatedElements);
 
     // Initial call to start the visuals
     startBreathingVisuals();
@@ -143,15 +140,21 @@
   });
 </script>
 
-<div class="container">
+<div class="container child-container-body">
   <div class="controls">
-    <button on:click={handleWalk} disabled={walkButtonDisabled}>{walkButtonText}</button>
-    <button on:click={handleSedentary} disabled={sedentaryButtonDisabled}
+    <button onclick={handleWalk} disabled={walkButtonDisabled}>{walkButtonText}</button>
+    <button onclick={handleSedentary} disabled={sedentaryButtonDisabled}
       >{sedentaryButtonText}</button
     >
   </div>
 
-  <svg width="300" height="360" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    style="min-width: 300px; min-height: 360px;"
+    width="300"
+    height="360"
+    viewBox="0 0 100 120"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <defs>
       <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" style="stop-color: #b0e0ed; stop-opacity: 1" />
@@ -256,11 +259,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f8f9fa;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 1em;
     flex: 1; /* Allows it to take equal space */
     min-width: 300px;
   }

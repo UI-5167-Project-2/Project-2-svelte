@@ -2,6 +2,8 @@
   import { onMount, onDestroy } from 'svelte';
   import DeviceDemonstration from './Device-Demonstration.svelte';
   import DeviceCloseUp from './Device-Close-Up.svelte';
+  // @ts-ignore
+  import { BeltData, getToday } from '../Data-Store.svelte';
 
   let activeTab = $state('demo');
 
@@ -55,6 +57,11 @@
 
     breathingInterval = setInterval(() => {
       breathCount++;
+      const today = BeltData.getDay(getToday().toISOString());
+      if (today) {
+        today.BreathCount = breathCount;
+        BeltData.updateDay(getToday().toISOString(), today);
+      }
     }, intervalMs);
   };
 
@@ -104,7 +111,7 @@
   };
 
   // --- Simulation & Data Update Functions ---
-  const handleWalk = () => {
+  function handleWalk() {
     if (walkButtonDisabled) return;
 
     walkButtonText = 'Activity Running (10s)...';
@@ -112,7 +119,8 @@
     sedentaryButtonDisabled = true;
 
     const durationSeconds = 10;
-    const initialSteps = stepsCount;
+    const today = BeltData.getDay(getToday().toISOString());
+    const initialSteps = today?.StepCount ?? stepsCount;
 
     breathingRate = 18;
     startBreathingCount(breathingRate);
@@ -131,6 +139,16 @@
       elapsedUpdates++;
       if (elapsedUpdates < totalUpdates) {
         stepsCount = Math.round((elapsedUpdates / totalUpdates) * 150 + initialSteps);
+
+        const today = BeltData.getDay(getToday().toISOString());
+        if (today) {
+          today.StepCount = stepsCount;
+          if (elapsedUpdates > totalUpdates / 2) {
+            today.StairCount = finalStairs;
+          }
+          BeltData.updateDay(getToday().toISOString(), today);
+        }
+
         if (elapsedUpdates > totalUpdates / 2) {
           stairsCount = finalStairs;
         }
@@ -140,9 +158,9 @@
         setTimeout(() => stopAllActivity(), 2000);
       }
     }, intervalTime);
-  };
+  }
 
-  const handleSedentary = () => {
+  function handleSedentary() {
     if (sedentaryButtonDisabled) return;
 
     sedentaryButtonText = 'Tracking Sedentary...';
@@ -175,10 +193,10 @@
         stopAllActivity();
       }, 2000);
     }, sedentaryDuration);
-  };
+  }
 
   // --- Buckle View Control Function (passed to DeviceViewer) ---
-  const changeBuckleView = (viewId) => {
+  function changeBuckleView(viewId) {
     switch (viewId) {
       case 1: // Side View (Right)
         buckle3DTransform = 'rotateY(60deg) rotateX(5deg)';
@@ -202,7 +220,7 @@
         viewAngleText = 'Front (0°, 0°)';
         break;
     }
-  };
+  }
 
   // --- Svelte Lifecycle Hooks ---
   onMount(() => {
@@ -216,65 +234,75 @@
   });
 </script>
 
-<ul class="nav nav-tabs mb-2 cursor-pointer no-text-select" id="tabs">
-  <li class="nav-item">
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <!-- svelte-ignore a11y_missing_attribute -->
-    <a
-      class="nav-link no-select cursor-pointer"
-      class:active={activeTab === 'demo'}
-      aria-current={activeTab === 'demo' ? 'page' : null}
-      onclick={() => (activeTab = 'demo')}
-    >
-      Demonstration
-    </a>
-  </li>
-  <li class="nav-item">
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <!-- svelte-ignore a11y_missing_attribute -->
-    <a
-      class="nav-link no-select cursor-pointer"
-      class:active={activeTab === 'product-view'}
-      aria-current={activeTab === 'product-view' ? 'page' : null}
-      onclick={() => (activeTab = 'product-view')}
-    >
-      Product Close-Up
-    </a>
-  </li>
-</ul>
+<div class="content-view-container">
+  <div>
+    <ul class="nav nav-tabs mb-2 cursor-pointer no-text-select" id="tabs">
+      <li class="nav-item">
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <!-- svelte-ignore a11y_missing_attribute -->
+        <a
+          class="nav-link no-select cursor-pointer"
+          class:active={activeTab === 'demo'}
+          aria-current={activeTab === 'demo' ? 'page' : null}
+          onclick={() => (activeTab = 'demo')}
+        >
+          Demonstration
+        </a>
+      </li>
+      <li class="nav-item">
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <!-- svelte-ignore a11y_missing_attribute -->
+        <a
+          class="nav-link no-select cursor-pointer"
+          class:active={activeTab === 'product-view'}
+          aria-current={activeTab === 'product-view' ? 'page' : null}
+          onclick={() => (activeTab = 'product-view')}
+        >
+          Product Close-Up
+        </a>
+      </li>
+    </ul>
+  </div>
 
-{#if activeTab === 'demo'}
-  <DeviceDemonstration
-    {stepsCount}
-    {stairsCount}
-    {breathCount}
-    {breathingRate}
-    {postureStatus}
-    {walkButtonText}
-    {sedentaryButtonText}
-    {walkButtonDisabled}
-    {sedentaryButtonDisabled}
-    {bodyShapeFill}
-    {pantsShapeFill}
-    {pantsShapeStroke}
-    {beltFill}
-    {buckleFrameFill}
-    {bucklePinFill}
-    on:walk={handleWalk}
-    on:sedentary={handleSedentary}
-    on:registerelements={(e) => registerElements(e.detail)}
-  />
-{:else if activeTab === 'product-view'}
-  <DeviceCloseUp
-    {buckle3DTransform}
-    {viewAngleText}
-    {viewBuckleFrameColor}
-    {viewBucklePinColor}
-    on:changeview={(e) => changeBuckleView(e.detail)}
-  />
-{/if}
+  {#if activeTab === 'demo'}
+    <DeviceDemonstration
+      {stepsCount}
+      {stairsCount}
+      {breathCount}
+      {breathingRate}
+      {postureStatus}
+      {walkButtonText}
+      {sedentaryButtonText}
+      {walkButtonDisabled}
+      {sedentaryButtonDisabled}
+      {bodyShapeFill}
+      {pantsShapeFill}
+      {pantsShapeStroke}
+      {beltFill}
+      {buckleFrameFill}
+      {bucklePinFill}
+      handleWalk={() => handleWalk()}
+      handleSedentary={() => handleSedentary()}
+      registerElements={(e) => registerElements(e)}
+    />
+  {:else if activeTab === 'product-view'}
+    <DeviceCloseUp
+      {buckle3DTransform}
+      {viewAngleText}
+      {viewBuckleFrameColor}
+      {viewBucklePinColor}
+      changeBuckleView={(e) => changeBuckleView(e)}
+    />
+  {/if}
+</div>
 
 <style>
+  .content-view-container {
+    overflow-y: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 </style>
