@@ -1,0 +1,280 @@
+<script>
+  import { onMount, onDestroy } from 'svelte';
+  import DeviceDemonstration from './Device-Demonstration.svelte';
+  import DeviceCloseUp from './Device-Close-Up.svelte';
+
+  let activeTab = $state('demo');
+
+  // --- State Variables (All centralized here) ---
+  let stepsCount = $state(0);
+  let stairsCount = $state(0);
+  let breathingRate = $state(12); // Breaths per minute (BPM)
+  let breathCount = $state(0);
+  let postureStatus = $state('Standing/Active');
+  let walkButtonText = $state('🚶 Start 10s Walk/Run');
+  let sedentaryButtonText = $state('🪑 Simulate 30s Sedentary');
+  let walkButtonDisabled = $state(false);
+  let sedentaryButtonDisabled = $state(false);
+
+  // State for DeviceViewer
+  let viewAngleText = $state('Front (0°, 0°)');
+  let buckle3DTransform = $state('rotateX(0deg) rotateY(0deg)');
+  let viewBuckleFrameColor = $state('');
+  let viewBucklePinColor = $state('');
+
+  let animationInterval;
+  let sedentaryTimeout;
+  let breathingInterval;
+
+  // References for SVG animation (Will be managed by DeviceSimulation)
+  let bodyShape;
+  let pantsShape;
+  let belt;
+  let buckleFrame;
+  let bucklePin;
+  let animatedElements;
+
+  // Svelte reactivity handles changes to these styles directly (Passed as props to DeviceSimulation)
+  let bodyShapeFill = $state('url(#bodyGradient)');
+  let pantsShapeFill = $state('url(#pantsGradient)');
+  let pantsShapeStroke = $state('#2c3e50');
+  let beltFill = $state('url(#beltGradient)');
+  let buckleFrameFill = $state('url(#buckleFrameGradient)');
+  let bucklePinFill = $state('url(#bucklePinGradient)');
+
+  // --- Core Animation Functions ---
+
+  // This setup is moved here, but the SVG element bindings are in DeviceSimulation.svelte.
+  // We'll need a mechanism to get the element references from the child component.
+  // The simplest way is to pass a function down, but for this demo, let's keep the core functions that modify the state in the parent.
+
+  const startBreathingCount = (rate) => {
+    if (breathingInterval) clearInterval(breathingInterval);
+
+    const intervalMs = (60 / rate) * 1000;
+
+    breathingInterval = setInterval(() => {
+      breathCount++;
+    }, intervalMs);
+  };
+
+  // The SVG animation part is delegated to the child component via props/updates
+  const startBreathingAnimation = () => {
+    // Note: The actual animation logic on SVG elements is now triggered by state changes in DeviceSimulation.svelte
+    startBreathingCount(breathingRate);
+  };
+
+  const startWalkingMotion = () => {
+    // Note: The actual animation logic on SVG elements is now triggered by state changes in DeviceSimulation.svelte
+  };
+
+  // Function to get the SVG element references from the child component when it mounts
+  const registerElements = (elements) => {
+    animatedElements = elements;
+    // After elements are registered, start the initial animations
+    startBreathingAnimation();
+  };
+
+  const stopAllActivity = () => {
+    if (animationInterval) clearInterval(animationInterval);
+    if (sedentaryTimeout) clearTimeout(sedentaryTimeout);
+    if (breathingInterval) clearInterval(breathingInterval);
+
+    // Reset fills to SVG gradients
+    bodyShapeFill = 'url(#bodyGradient)';
+    pantsShapeFill = 'url(#pantsGradient)';
+    pantsShapeStroke = '#2c3e50';
+    beltFill = 'url(#beltGradient)';
+    buckleFrameFill = 'url(#buckleFrameGradient)';
+    bucklePinFill = 'url(#bucklePinGradient)';
+
+    // Reset 3D view colors
+    viewBuckleFrameColor = '';
+    viewBucklePinColor = '';
+
+    walkButtonText = '🚶 Start 10s Walk/Run';
+    sedentaryButtonText = '🪑 Simulate 30s Sedentary';
+    walkButtonDisabled = false;
+    sedentaryButtonDisabled = false;
+
+    postureStatus = 'Standing/Active';
+    breathingRate = 12;
+
+    startBreathingAnimation();
+  };
+
+  // --- Simulation & Data Update Functions ---
+  const handleWalk = () => {
+    if (walkButtonDisabled) return;
+
+    walkButtonText = 'Activity Running (10s)...';
+    walkButtonDisabled = true;
+    sedentaryButtonDisabled = true;
+
+    const durationSeconds = 10;
+    const initialSteps = stepsCount;
+
+    breathingRate = 18;
+    startBreathingCount(breathingRate);
+    startWalkingMotion();
+
+    postureStatus = 'Walking';
+
+    let elapsedUpdates = 0;
+    const intervalTime = 100;
+    const totalUpdates = (durationSeconds * 1000) / intervalTime;
+
+    const finalSteps = initialSteps + 150;
+    const finalStairs = stairsCount + 1;
+
+    animationInterval = setInterval(() => {
+      elapsedUpdates++;
+      if (elapsedUpdates < totalUpdates) {
+        stepsCount = Math.round((elapsedUpdates / totalUpdates) * 150 + initialSteps);
+        if (elapsedUpdates > totalUpdates / 2) {
+          stairsCount = finalStairs;
+        }
+      } else {
+        clearInterval(animationInterval);
+        walkButtonText = '✅ Walk Completed!';
+        setTimeout(() => stopAllActivity(), 2000);
+      }
+    }, intervalTime);
+  };
+
+  const handleSedentary = () => {
+    if (sedentaryButtonDisabled) return;
+
+    sedentaryButtonText = 'Tracking Sedentary...';
+    walkButtonDisabled = true;
+    sedentaryButtonDisabled = true;
+    postureStatus = 'Sitting/Inactive';
+
+    breathingRate = 12;
+    startBreathingCount(breathingRate);
+
+    const sedentaryDuration = 5000;
+
+    sedentaryTimeout = setTimeout(() => {
+      postureStatus = '❌ Bad Posture/Move!';
+
+      // Change SVG fills to solid warning colors
+      bodyShapeFill = '#dc3545';
+      pantsShapeFill = '#a94442';
+      pantsShapeStroke = '#a94442';
+      beltFill = '#ff7f50';
+      buckleFrameFill = '#ff7f50';
+      bucklePinFill = '#c0392b';
+
+      // Update 3D view colors
+      viewBuckleFrameColor = '#ff7f50';
+      viewBucklePinColor = '#c0392b';
+
+      setTimeout(() => {
+        sedentaryButtonText = '🪑 Simulate 30s Sedentary';
+        stopAllActivity();
+      }, 2000);
+    }, sedentaryDuration);
+  };
+
+  // --- Buckle View Control Function (passed to DeviceViewer) ---
+  const changeBuckleView = (viewId) => {
+    switch (viewId) {
+      case 1: // Side View (Right)
+        buckle3DTransform = 'rotateY(60deg) rotateX(5deg)';
+        viewAngleText = 'Side View (60°, 5°)';
+        break;
+      case 2: // Top View
+        buckle3DTransform = 'rotateX(-75deg) rotateY(0deg)';
+        viewAngleText = 'Top View (-75°, 0°)';
+        break;
+      case 3: // Side View (Left)
+        buckle3DTransform = 'rotateY(-60deg) rotateX(5deg)';
+        viewAngleText = 'Side View (-60°, 5°)';
+        break;
+      case 4: // Bottom View
+        buckle3DTransform = 'rotateX(75deg) rotateY(0deg)';
+        viewAngleText = 'Bottom View (75°, 0°)';
+        break;
+      case 5: // Front View (Reset)
+      default:
+        buckle3DTransform = 'rotateX(0deg) rotateY(0deg)';
+        viewAngleText = 'Front (0°, 0°)';
+        break;
+    }
+  };
+
+  // --- Svelte Lifecycle Hooks ---
+  onMount(() => {
+    // Initial setup, the full startBreathingAnimation will run once elements are registered.
+  });
+
+  onDestroy(() => {
+    if (animationInterval) clearInterval(animationInterval);
+    if (sedentaryTimeout) clearTimeout(sedentaryTimeout);
+    if (breathingInterval) clearInterval(breathingInterval);
+  });
+</script>
+
+<ul class="nav nav-tabs mb-2 cursor-pointer no-text-select" id="tabs">
+  <li class="nav-item">
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_missing_attribute -->
+    <a
+      class="nav-link no-select cursor-pointer"
+      class:active={activeTab === 'demo'}
+      aria-current={activeTab === 'demo' ? 'page' : null}
+      onclick={() => (activeTab = 'demo')}
+    >
+      Demonstration
+    </a>
+  </li>
+  <li class="nav-item">
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_missing_attribute -->
+    <a
+      class="nav-link no-select cursor-pointer"
+      class:active={activeTab === 'product-view'}
+      aria-current={activeTab === 'product-view' ? 'page' : null}
+      onclick={() => (activeTab = 'product-view')}
+    >
+      Product Close-Up
+    </a>
+  </li>
+</ul>
+
+{#if activeTab === 'demo'}
+  <DeviceDemonstration
+    {stepsCount}
+    {stairsCount}
+    {breathCount}
+    {breathingRate}
+    {postureStatus}
+    {walkButtonText}
+    {sedentaryButtonText}
+    {walkButtonDisabled}
+    {sedentaryButtonDisabled}
+    {bodyShapeFill}
+    {pantsShapeFill}
+    {pantsShapeStroke}
+    {beltFill}
+    {buckleFrameFill}
+    {bucklePinFill}
+    on:walk={handleWalk}
+    on:sedentary={handleSedentary}
+    on:registerelements={(e) => registerElements(e.detail)}
+  />
+{:else if activeTab === 'product-view'}
+  <DeviceCloseUp
+    {buckle3DTransform}
+    {viewAngleText}
+    {viewBuckleFrameColor}
+    {viewBucklePinColor}
+    on:changeview={(e) => changeBuckleView(e.detail)}
+  />
+{/if}
+
+<style>
+</style>
