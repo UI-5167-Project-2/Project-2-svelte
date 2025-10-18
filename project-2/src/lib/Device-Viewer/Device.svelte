@@ -8,7 +8,7 @@
   import InLineDialog from '../shared-components/dialog/In-Line-Dialog.svelte';
   import InLineDialogOpenButton from '../shared-components/dialog/In-Line-Dialog-Open-Button.svelte';
   import DynamicDialog from '../shared-components/dialog/Dynamic-Dialog.svelte';
-  import NumberLine from '../shared-components/Number-Line.svelte'
+  import NumberLine from '../shared-components/Number-Line.svelte';
 
   // --- State Variables (All centralized here) ---
   let stepsCount = $state(0);
@@ -24,7 +24,7 @@
   const sim_list = $state([
     // Add new actions in this format whenever a new function is created.
     {
-      id: "walk",
+      id: 'walk',
       action: handleWalk,
       label: 'Start 10s Walk/Run',
       description:
@@ -32,7 +32,7 @@
       disabled: false,
     },
     {
-      id: "sedentary",
+      id: 'sedentary',
       action: handleSedentary,
       label: 'Simulate 30s Sedentary',
       description:
@@ -40,7 +40,7 @@
       disabled: false,
     },
     {
-      id: "DND",
+      id: 'DND',
       action: handleDoNotDisturb,
       label: 'Simulate Do Not Disturb Mode',
       description:
@@ -48,7 +48,7 @@
       disabled: false,
     },
     {
-      id: "test",
+      id: 'test',
       action: () => {
         sim_list.forEach((button) => (button.disabled = false));
       },
@@ -60,7 +60,7 @@
 
   // Effect to update DND button based on invalidTimeRange and timeRanges
   $effect(() => {
-    const dndButton = sim_list.find(button => button.id === "DND");
+    const dndButton = sim_list.find((button) => button.id === 'DND');
     if (dndButton) {
       // Disable if ranges overlap OR if no ranges are defined
       dndButton.disabled = invalidTimeRange || timeRanges.length === 0;
@@ -113,24 +113,24 @@
         BeltData.updateDay(getToday().toISOString(), today);
       }
     }, intervalMs);
-  }
+  };
 
   // The SVG animation part is delegated to the child component via props/updates
   const startBreathingAnimation = () => {
     // Note: The actual animation logic on SVG elements is now triggered by state changes in DeviceSimulation.svelte
     startBreathingCount(breathingRate);
-  }
+  };
 
   const startWalkingMotion = () => {
     // Note: The actual animation logic on SVG elements is now triggered by state changes in DeviceSimulation.svelte
-  }
+  };
 
   // Function to get the SVG element references from the child component when it mounts
   const registerElements = (elements) => {
     animatedElements = elements;
     // After elements are registered, start the initial animations
     startBreathingAnimation();
-  }
+  };
 
   const stopAllActivity = () => {
     if (animationInterval) clearInterval(animationInterval);
@@ -159,7 +159,7 @@
     breathingRate = 12;
 
     startBreathingAnimation();
-  }
+  };
 
   // --- Simulation & Data Update Functions ---
   function handleAction(action) {
@@ -255,14 +255,14 @@
     }, sedentaryDuration);
   }
 
-  function handleDoNotDisturb(){
+  function handleDoNotDisturb() {
     // Ticks twice per second, 30 minute intervals per tick.
-    // Every tick, there's a 1/5 chance to be sedentary. 
-    // Visually, a red indicator will move across the line in the intervals. 
+    // Every tick, there's a 1/5 chance to be sedentary.
+    // Visually, a red indicator will move across the line in the intervals.
 
     // Helper function for do not disturb range
     function isInDNDRange(currentHour) {
-      return timeRanges.some(range => {
+      return timeRanges.some((range) => {
         const wraps = range.end < range.start;
         // Range wraps around midnight
         if (wraps) return currentHour >= range.start || currentHour <= range.end;
@@ -271,7 +271,7 @@
       });
     }
 
-    currentSimulationTime = 0 // Start the simulation at midnight
+    currentSimulationTime = 0; // Start the simulation at midnight
 
     const ticksPerSecond = 2;
     const intervalMs = 1000 / ticksPerSecond; // 500ms per tick
@@ -280,14 +280,14 @@
 
     let tickCount = 0;
 
-    postureStatus = "Simulating 24-hour period..."
+    postureStatus = 'Simulating 24-hour period...';
 
     dndInterval = setInterval(() => {
       currentSimulationTime = tickCount * hoursPerTick;
-      
+
       // Check if current time is in DND range
       const inDNDRange = isInDNDRange(currentSimulationTime);
-      
+
       if (inDNDRange) {
         // During DND: belt is inactive, show red indicator
         postureStatus = `DND Active (${Math.floor(currentSimulationTime)}:${((currentSimulationTime % 1) * 60).toString().padStart(2, '0')})`;
@@ -298,12 +298,12 @@
         bucklePinFill = 'url(#bucklePinGradient)';
         viewBuckleFrameColor = '#dc3545';
         viewBucklePinColor = '#a94442';
-        
+
         // No activity tracking during DND
       } else {
         // Outside DND: normal activity
         const isSedentary = Math.random() < 0.2; // 1/5 chance
-        
+
         if (isSedentary) {
           postureStatus = `Sedentary (${Math.floor(currentSimulationTime)}:${((currentSimulationTime % 1) * 60).toString().padStart(2, '0')})`;
           bodyShapeFill = 'url(#bodyGradient)'; // Normal body gradient
@@ -322,7 +322,7 @@
           bucklePinFill = '#218838';
           viewBuckleFrameColor = '#28a745';
           viewBucklePinColor = '#218838';
-          
+
           // Track activity
           const today = BeltData.getDay(getToday().toISOString());
           if (today) {
@@ -339,7 +339,7 @@
       if (tickCount >= totalTicks) {
         clearInterval(dndInterval);
         dndInterval = null;
-        
+
         setTimeout(() => {
           postureStatus = 'DND Simulation Complete!';
           setTimeout(() => {
@@ -384,7 +384,10 @@
         {#each sim_list as simulation}
           <li>
             <div class="dropdown-item">
-              <InLineDialogOpenButton generatedID="{simulation.id}dialog" buttonIcon="bi bi-info-circle fs-5 " />
+              <InLineDialogOpenButton
+                generatedID="{simulation.id}dialog"
+                buttonIcon="bi bi-info-circle fs-5 "
+              />
 
               <button
                 class="btn btn-primary fs-5"
@@ -401,7 +404,6 @@
     </div>
 
     <div class="status-message">
-      
       {postureStatus}
     </div>
 
@@ -418,7 +420,6 @@
         buttonIcon="bi bi-info-circle fs-5"
         {body}
       />
-        
     </div>
   </div>
 
@@ -446,15 +447,10 @@
       {buckleFrameFill}
       {bucklePinFill}
       registerElements={(e) => registerElements(e)}
-    />  
+    />
   </div>
 
-  <NumberLine
-    bind:disableButton={invalidTimeRange}
-    bind:ranges={timeRanges}
-  />
-
-
+  <NumberLine bind:disableButton={invalidTimeRange} bind:ranges={timeRanges} />
 </div>
 
 <style>
