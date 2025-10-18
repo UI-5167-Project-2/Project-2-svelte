@@ -293,8 +293,6 @@
     position: relative; /* Add this for absolute positioning */
   }
 
-  
-
   svg {
     border: 2px solid #bdc3c7;
     border-radius: 8px;
