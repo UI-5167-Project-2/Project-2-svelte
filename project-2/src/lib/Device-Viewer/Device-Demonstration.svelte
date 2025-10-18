@@ -222,28 +222,6 @@
       transform-origin="50 57"
     ></rect>
   </svg>
-
-  <!-- 
-  This UI component is deprecated, this information will be included in the mobile interface.
-  <div class="ui-panel">
-    <h3>Live Activity Data</h3>
-    <div class="data-point">
-      Steps: <span id="stepsCount" class="highlight">{stepsCount}</span>
-    </div>
-    <div class="data-point">
-      Stairs: <span id="stairsCount" class="highlight">{stairsCount}</span>
-    </div>
-    <div class="data-point">
-      Breaths: <span id="breathCount" class="highlight">{breathCount}</span>
-    </div>
-    <div class="data-point">
-      Breaths/min: <span id="breathingRate" class="highlight">{breathingRate}</span>
-    </div>
-    <div class="data-point">
-      Posture/Status:
-      <span id="postureStatus" class="highlight">{postureStatus}</span>
-    </div>
-  </div> -->
 </div>
 
 <style>

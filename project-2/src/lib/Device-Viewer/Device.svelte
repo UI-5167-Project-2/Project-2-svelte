@@ -457,55 +457,5 @@
   .device-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
-  }
-
-  .demonstration-container {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-  }
-
-  .status-message {
-    flex: 1; /* Take up remaining width */
-    display: flex;
-    align-items: center; /* Center vertically */
-    justify-content: center; /* Center horizontally */
-    text-align: center; /* Center text content */
-    padding: 0.5rem;
-    background-color: rgba(255, 255, 255, 0.1); /* Optional: add background for visibility */
-    border-radius: 6px; /* Optional: match other elements */
-    min-height: 2.5rem; /* Optional: ensure consistent height */
-  }
-
-  .controls {
-    top: 10px;
-    left: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1em;
-    min-height: 3em;
-    max-height: 3em;
-  }
-
-  button:hover {
-    background-color: #2980b9;
-  }
-
-  button:active {
-    transform: scale(0.98);
-  }
-
-  button:disabled {
-    background-color: #bdc3c7;
-    cursor: not-allowed;
-  }
-
-  .dropdown-arrow {
-    font-size: 0.8rem;
-    color: white;
-    opacity: 0.8;
-    margin-left: 0.2rem;
   }
 </style>
