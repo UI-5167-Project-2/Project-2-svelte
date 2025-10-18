@@ -141,13 +141,46 @@
 </script>
 
 <div class="container child-container-body">
-  <div class="controls">
-    <button onclick={handleWalk} disabled={walkButtonDisabled}>{walkButtonText}</button>
-    <button onclick={handleSedentary} disabled={sedentaryButtonDisabled}
-      >{sedentaryButtonText}</button
-    >
-  </div>
+  
+  <!-- <div class="controls">
+    <div class="dropdown">
+      <button 
+        class="btn btn-outline-secondary hamburger-btn" 
+        type="button" 
+        data-bs-toggle="dropdown" 
+        aria-expanded="false"
+        aria-label="Menu"
+      >
+        <i class="bi bi-list"></i>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <div class="dropdown-item-wrapper d-flex justify-content-between align-items-center">
+            <button 
+              class="btn btn-link text-start p-0 flex-grow-1" 
+              onclick={handleWalk} 
+              disabled={walkButtonDisabled}
+            >
+              {walkButtonText}
+            </button>
+          </div>
+        </li>
+        <li>
+          <div class="dropdown-item-wrapper d-flex justify-content-between align-items-center">
+            <button 
+              class="btn btn-link text-start p-0 flex-grow-1" 
+              onclick={handleSedentary} 
+              disabled={sedentaryButtonDisabled}
+            >
+              {sedentaryButtonText}
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div> -->
 
+  <!-- the guy -->
   <svg
     style="min-width: 300px; min-height: 360px;"
     width="300"
@@ -155,7 +188,7 @@
     viewBox="0 0 100 120"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <defs>
+    <defs> <!-- SVG Gradients -->
       <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" style="stop-color: #b0e0ed; stop-opacity: 1" />
         <stop offset="50%" style="stop-color: #a0d2eb; stop-opacity: 1" />
@@ -183,6 +216,7 @@
       </linearGradient>
     </defs>
 
+    <!-- Shirt -->
     <path
       bind:this={bodyShape}
       d="M 20 0 L 20 45 L 80 45 L 80 0 Z"
@@ -192,6 +226,7 @@
       transform-origin="50 30"
     ></path>
 
+    <!-- Pants -->
     <path
       bind:this={pantsShape}
       d="M 80 45 L 80 55 L 80 90 C 80 100, 70 105, 53 105 L 53 80 L 48 80 L 48 105 C 30 105, 20 100, 20 90 L 20 55 L 20 45 Z"
@@ -200,10 +235,20 @@
       stroke-width="1"
       transform-origin="50 75"
     ></path>
-
-    <rect bind:this={belt} x="20" y="52" width="60" height="10" fill={beltFill} rx="3" ry="3"
+    
+    <!-- Belt -->
+    <rect 
+      bind:this={belt} 
+      x="20" 
+      y="52" 
+      width="60" 
+      height="10" 
+      fill={beltFill} 
+      rx="3" 
+      ry="3"
     ></rect>
 
+    <!-- Belt Buckle -->
     <rect
       bind:this={buckleFrame}
       x="42"
@@ -218,6 +263,7 @@
       transform-origin="50 57"
     ></rect>
 
+    <!-- Belt Pin -->
     <rect
       bind:this={bucklePin}
       x="48"
@@ -233,27 +279,6 @@
     ></rect>
   </svg>
 
-  <!-- 
-  This UI component is deprecated, this information will be included in the mobile interface.
-  <div class="ui-panel">
-    <h3>Live Activity Data</h3>
-    <div class="data-point">
-      Steps: <span id="stepsCount" class="highlight">{stepsCount}</span>
-    </div>
-    <div class="data-point">
-      Stairs: <span id="stairsCount" class="highlight">{stairsCount}</span>
-    </div>
-    <div class="data-point">
-      Breaths: <span id="breathCount" class="highlight">{breathCount}</span>
-    </div>
-    <div class="data-point">
-      Breaths/min: <span id="breathingRate" class="highlight">{breathingRate}</span>
-    </div>
-    <div class="data-point">
-      Posture/Status:
-      <span id="postureStatus" class="highlight">{postureStatus}</span>
-    </div>
-  </div> -->
 </div>
 
 <style>
@@ -261,45 +286,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
+    
     padding: 1em;
     flex: 1; /* Allows it to take equal space */
     min-width: 300px;
+    position: relative; /* Add this for absolute positioning */
   }
 
-  .controls {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-  }
-
-  button {
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    background-color: #3498db;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition:
-      background-color 0.3s ease,
-      transform 0.1s ease;
-  }
-
-  button:hover {
-    background-color: #2980b9;
-  }
-
-  button:active {
-    transform: scale(0.98);
-  }
-
-  button:disabled {
-    background-color: #bdc3c7;
-    cursor: not-allowed;
-  }
+  
 
   svg {
     border: 2px solid #bdc3c7;

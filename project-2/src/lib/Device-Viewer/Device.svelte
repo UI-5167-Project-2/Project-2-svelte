@@ -13,10 +13,28 @@
   let breathingRate = $state(12); // Breaths per minute (BPM)
   let breathCount = $state(0);
   let postureStatus = $state('Standing/Active');
-  let walkButtonText = $state('🚶 Start 10s Walk/Run');
-  let sedentaryButtonText = $state('🪑 Simulate 30s Sedentary');
+  
+  let walkButtonText = $state('Start 10s Walk/Run');
+  let sedentaryButtonText = $state('Simulate 30s Sedentary');
+  
   let walkButtonDisabled = $state(false);
   let sedentaryButtonDisabled = $state(false);
+
+  const sim_list = $state([
+    // Add new actions in this format whenever a new function is created.
+    {
+      action: handleWalk,
+      label: 'Start 10s Walk/Run',
+      description: 'Simulates walking activity. This will increase your step count and show walking animations on the device visualization.',
+      disabled: false
+    },
+    {
+      action: handleSedentary,
+      label: 'Simulate 30s Sedentary',
+      description: 'Simulates sedentary activity like sitting or standing still. This will show appropriate posture status and breathing animations.',
+      disabled: false
+    }
+  ]);
 
   // State for DeviceViewer
   let viewAngleText = $state('Front (0°, 0°)');
@@ -99,8 +117,6 @@
     viewBuckleFrameColor = '';
     viewBucklePinColor = '';
 
-    walkButtonText = '🚶 Start 10s Walk/Run';
-    sedentaryButtonText = '🪑 Simulate 30s Sedentary';
     walkButtonDisabled = false;
     sedentaryButtonDisabled = false;
 
@@ -111,12 +127,27 @@
   };
 
   // --- Simulation & Data Update Functions ---
+  function handleAction(action) {
+    // Function wrapper for any action. Makes sure that any repeated actions across
+    // all simulations are done.
+
+    // Disable all action buttons to prepare for an action
+    sim_list.forEach((button) => {
+      button.disabled = true;
+    })
+
+    action()
+
+    // re-enable all action buttons to prepare for an action
+    sim_list.forEach((button) => {
+      button.disabled = false;
+    })
+
+  }
+
+
   function handleWalk() {
     if (walkButtonDisabled) return;
-
-    walkButtonText = 'Activity Running (10s)...';
-    walkButtonDisabled = true;
-    sedentaryButtonDisabled = true;
 
     const durationSeconds = 10;
     const today = BeltData.getDay(getToday().toISOString());
@@ -154,7 +185,7 @@
         }
       } else {
         clearInterval(animationInterval);
-        walkButtonText = '✅ Walk Completed!';
+
         setTimeout(() => stopAllActivity(), 2000);
       }
     }, intervalTime);
@@ -163,7 +194,6 @@
   function handleSedentary() {
     if (sedentaryButtonDisabled) return;
 
-    sedentaryButtonText = 'Tracking Sedentary...';
     walkButtonDisabled = true;
     sedentaryButtonDisabled = true;
     postureStatus = 'Sitting/Inactive';
@@ -189,11 +219,12 @@
       viewBucklePinColor = '#c0392b';
 
       setTimeout(() => {
-        sedentaryButtonText = '🪑 Simulate 30s Sedentary';
         stopAllActivity();
       }, 2000);
     }, sedentaryDuration);
   }
+
+  
 
   // --- Svelte Lifecycle Hooks ---
   onMount(() => {
@@ -207,25 +238,61 @@
   });
 </script>
 
-    <DeviceDemonstration
-      {stepsCount}
-      {stairsCount}
-      {breathCount}
-      {breathingRate}
-      {postureStatus}
-      {walkButtonText}
-      {sedentaryButtonText}
-      {walkButtonDisabled}
-      {sedentaryButtonDisabled}
-      {bodyShapeFill}
-      {pantsShapeFill}
-      {pantsShapeStroke}
-      {beltFill}
-      {buckleFrameFill}
-      {bucklePinFill}
-      handleWalk={() => handleWalk()}
-      handleSedentary={() => handleSedentary()}
-      registerElements={(e) => registerElements(e)}
+<!-- Top bar for control components -->
+<div class="controls">
+  <div class="dropdown">
+    <button 
+      class="btn btn-outline-secondary hamburger-btn" 
+      type="button" 
+      data-bs-toggle="dropdown" 
+      aria-expanded="false"
+      aria-label="Menu"
+    >
+      <i class="bi bi-list"></i>
+    </button>
+    <ul class="dropdown-menu">
+      <li>
+        <div class="dropdown-item-wrapper d-flex justify-content-between align-items-center">
+          Actions:
+        </div>
+      </li>
+      {#each sim_list as simulation}
+        <li>
+          <div class="">
+            <button
+              class="btn btn-link text-start p-0 flex-grow-1"
+              onclick={() => handleAction(simulation.action)}
+              disabled={simulation.disabled}
+              >
+              {simulation.label}
+            </button>
+          </div>
+        </li>
+      {/each}
+    </ul>
+  </div>
+</div>
+
+<!-- Component for the guy -->
+<DeviceDemonstration
+  {stepsCount}
+  {stairsCount}
+  {breathCount}
+  {breathingRate}
+  {postureStatus}
+  {walkButtonText}
+  {sedentaryButtonText}
+  {walkButtonDisabled}
+  {sedentaryButtonDisabled}
+  {bodyShapeFill}
+  {pantsShapeFill}
+  {pantsShapeStroke}
+  {beltFill}
+  {buckleFrameFill}
+  {bucklePinFill}
+  handleWalk={() => handleWalk()}
+  handleSedentary={() => handleSedentary()}
+  registerElements={(e) => registerElements(e)}
     />
 
 <style>
@@ -235,4 +302,70 @@
     display: flex;
     flex-direction: column;
   }
+
+  .controls {
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+  }
+
+  .hamburger-btn {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+
+  .hamburger-btn i {
+    font-size: 1.2rem;
+  }
+
+  button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #3498db;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+      background-color 0.3s ease,
+      transform 0.1s ease;
+  }
+
+  button:hover {
+    background-color: #2980b9;
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+  }
+
+  .dropdown-item-wrapper {
+    padding: 0.25rem 1rem;
+  }
+
+  .dropdown-item-wrapper:hover {
+    background-color: #f8f9fa;
+  }
+
+  .dropdown-item-wrapper button:first-child {
+    color: #212529 !important;
+    text-decoration: none !important;
+  }
+
+  .dropdown-item-wrapper button:first-child:disabled {
+    color: #6c757d !important;
+    opacity: 0.65;
+  }
+
 </style>
