@@ -195,33 +195,6 @@
     }, sedentaryDuration);
   }
 
-  // --- Buckle View Control Function (passed to DeviceViewer) ---
-  function changeBuckleView(viewId) {
-    switch (viewId) {
-      case 1: // Side View (Right)
-        buckle3DTransform = 'rotateY(60deg) rotateX(5deg)';
-        viewAngleText = 'Side View (60°, 5°)';
-        break;
-      case 2: // Top View
-        buckle3DTransform = 'rotateX(-75deg) rotateY(0deg)';
-        viewAngleText = 'Top View (-75°, 0°)';
-        break;
-      case 3: // Side View (Left)
-        buckle3DTransform = 'rotateY(-60deg) rotateX(5deg)';
-        viewAngleText = 'Side View (-60°, 5°)';
-        break;
-      case 4: // Bottom View
-        buckle3DTransform = 'rotateX(75deg) rotateY(0deg)';
-        viewAngleText = 'Bottom View (75°, 0°)';
-        break;
-      case 5: // Front View (Reset)
-      default:
-        buckle3DTransform = 'rotateX(0deg) rotateY(0deg)';
-        viewAngleText = 'Front (0°, 0°)';
-        break;
-    }
-  }
-
   // --- Svelte Lifecycle Hooks ---
   onMount(() => {
     // Initial setup, the full startBreathingAnimation will run once elements are registered.
@@ -234,39 +207,6 @@
   });
 </script>
 
-<div class="content-view-container">
-  <div>
-    <ul class="nav nav-tabs mb-2 cursor-pointer no-text-select" id="tabs">
-      <li class="nav-item">
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <!-- svelte-ignore a11y_missing_attribute -->
-        <a
-          class="nav-link no-select cursor-pointer"
-          class:active={activeTab === 'demo'}
-          aria-current={activeTab === 'demo' ? 'page' : null}
-          onclick={() => (activeTab = 'demo')}
-        >
-          Demonstration
-        </a>
-      </li>
-      <li class="nav-item">
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <!-- svelte-ignore a11y_missing_attribute -->
-        <a
-          class="nav-link no-select cursor-pointer"
-          class:active={activeTab === 'product-view'}
-          aria-current={activeTab === 'product-view' ? 'page' : null}
-          onclick={() => (activeTab = 'product-view')}
-        >
-          Product Close-Up
-        </a>
-      </li>
-    </ul>
-  </div>
-
-  {#if activeTab === 'demo'}
     <DeviceDemonstration
       {stepsCount}
       {stairsCount}
@@ -287,16 +227,6 @@
       handleSedentary={() => handleSedentary()}
       registerElements={(e) => registerElements(e)}
     />
-  {:else if activeTab === 'product-view'}
-    <DeviceCloseUp
-      {buckle3DTransform}
-      {viewAngleText}
-      {viewBuckleFrameColor}
-      {viewBucklePinColor}
-      changeBuckleView={(e) => changeBuckleView(e)}
-    />
-  {/if}
-</div>
 
 <style>
   .content-view-container {
