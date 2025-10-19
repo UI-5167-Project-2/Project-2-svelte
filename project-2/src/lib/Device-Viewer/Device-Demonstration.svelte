@@ -9,10 +9,6 @@
     breathCount,
     breathingRate,
     postureStatus,
-    walkButtonText,
-    sedentaryButtonText,
-    walkButtonDisabled,
-    sedentaryButtonDisabled,
     bodyShapeFill,
     pantsShapeFill,
     pantsShapeStroke,
@@ -140,53 +136,16 @@
   });
 </script>
 
-<div class="container child-container-body">
-  
-  <!-- <div class="controls">
-    <div class="dropdown">
-      <button 
-        class="btn btn-outline-secondary hamburger-btn" 
-        type="button" 
-        data-bs-toggle="dropdown" 
-        aria-expanded="false"
-        aria-label="Menu"
-      >
-        <i class="bi bi-list"></i>
-      </button>
-      <ul class="dropdown-menu">
-        <li>
-          <div class="dropdown-item-wrapper d-flex justify-content-between align-items-center">
-            <button 
-              class="btn btn-link text-start p-0 flex-grow-1" 
-              onclick={handleWalk} 
-              disabled={walkButtonDisabled}
-            >
-              {walkButtonText}
-            </button>
-          </div>
-        </li>
-        <li>
-          <div class="dropdown-item-wrapper d-flex justify-content-between align-items-center">
-            <button 
-              class="btn btn-link text-start p-0 flex-grow-1" 
-              onclick={handleSedentary} 
-              disabled={sedentaryButtonDisabled}
-            >
-              {sedentaryButtonText}
-            </button>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div> -->
+<div class="container">
 
   <!-- the guy -->
   <svg
     style="min-width: 300px; min-height: 360px;"
-    width="300"
-    height="360"
+    width="100%"
+    height="100%"
     viewBox="0 0 100 120"
     xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid meet"
   >
     <defs> <!-- SVG Gradients -->
       <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -290,13 +249,22 @@
     padding: 1em;
     flex: 1; /* Allows it to take equal space */
     min-width: 300px;
-    position: relative; /* Add this for absolute positioning */
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevent scrolling */
+    box-sizing: border-box; /* Include padding in height calculation */
   }
 
   svg {
     border: 2px solid #bdc3c7;
     border-radius: 8px;
     background-color: #ecf0f1;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    flex-shrink: 1; /* Allow SVG to shrink if needed */
   }
 
   path,
@@ -306,30 +274,5 @@
     transition:
       fill 0.5s ease-in-out,
       stroke 0.5s ease-in-out;
-  }
-
-  .ui-panel {
-    background-color: #ecf0f1;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-    width: 100%;
-    text-align: center;
-  }
-
-  h3 {
-    margin-top: 0;
-    color: #2c3e50;
-  }
-
-  .data-point {
-    font-size: 1.2rem;
-    margin: 8px 0;
-  }
-
-  .highlight {
-    font-weight: bold;
-    color: #e74c3c;
   }
 </style>

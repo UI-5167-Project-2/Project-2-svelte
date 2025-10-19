@@ -1,11 +1,10 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
   import DeviceDemonstration from './Device-Demonstration.svelte';
+  import ActionInfoDialog from './Action-Info-Dialog.svelte';
   import DeviceCloseUp from './Device-Close-Up.svelte';
   // @ts-ignore
   import { BeltData, getToday } from '../Data-Store.svelte';
-
-  let activeTab = $state('demo');
 
   // --- State Variables (All centralized here) ---
   let stepsCount = $state(0);
@@ -13,12 +12,6 @@
   let breathingRate = $state(12); // Breaths per minute (BPM)
   let breathCount = $state(0);
   let postureStatus = $state('Standing/Active');
-  
-  let walkButtonText = $state('Start 10s Walk/Run');
-  let sedentaryButtonText = $state('Simulate 30s Sedentary');
-  
-  let walkButtonDisabled = $state(false);
-  let sedentaryButtonDisabled = $state(false);
 
   const sim_list = $state([
     // Add new actions in this format whenever a new function is created.
@@ -32,6 +25,12 @@
       action: handleSedentary,
       label: 'Simulate 30s Sedentary',
       description: 'Simulates sedentary activity like sitting or standing still. This will show appropriate posture status and breathing animations.',
+      disabled: false
+    },
+    {
+      action: () => {sim_list.forEach((button) => button.disabled = false) },
+      label: "Test Item",
+      description: "This item is a test.",
       disabled: false
     }
   ]);
@@ -117,8 +116,10 @@
     viewBuckleFrameColor = '';
     viewBucklePinColor = '';
 
-    walkButtonDisabled = false;
-    sedentaryButtonDisabled = false;
+    // Re-enable all buttons
+    sim_list.forEach((button) => {
+      button.disabled = false;
+    });
 
     postureStatus = 'Standing/Active';
     breathingRate = 12;
@@ -131,24 +132,16 @@
     // Function wrapper for any action. Makes sure that any repeated actions across
     // all simulations are done.
 
-    // Disable all action buttons to prepare for an action
-    sim_list.forEach((button) => {
-      button.disabled = true;
-    })
-
-    action()
-
-    // re-enable all action buttons to prepare for an action
-    sim_list.forEach((button) => {
-      button.disabled = false;
-    })
-
+    // Disable all action buttons to prepare for an action. Buttons are re-enabled in
+    // `stopAllActivity()`
+  sim_list.forEach((button) => {
+    button.disabled = true;
+  })
+  // Call the function for the action
+  action()
   }
 
-
   function handleWalk() {
-    if (walkButtonDisabled) return;
-
     const durationSeconds = 10;
     const today = BeltData.getDay(getToday().toISOString());
     const initialSteps = today?.StepCount ?? stepsCount;
@@ -186,16 +179,14 @@
       } else {
         clearInterval(animationInterval);
 
-        setTimeout(() => stopAllActivity(), 2000);
+        setTimeout(() => {
+          stopAllActivity();
+        }, 2000);
       }
     }, intervalTime);
   }
 
   function handleSedentary() {
-    if (sedentaryButtonDisabled) return;
-
-    walkButtonDisabled = true;
-    sedentaryButtonDisabled = true;
     postureStatus = 'Sitting/Inactive';
 
     breathingRate = 12;
@@ -224,8 +215,6 @@
     }, sedentaryDuration);
   }
 
-  
-
   // --- Svelte Lifecycle Hooks ---
   onMount(() => {
     // Initial setup, the full startBreathingAnimation will run once elements are registered.
@@ -239,79 +228,141 @@
 </script>
 
 <!-- Top bar for control components -->
-<div class="controls">
-  <div class="dropdown">
-    <button 
-      class="btn btn-outline-secondary hamburger-btn" 
-      type="button" 
-      data-bs-toggle="dropdown" 
-      aria-expanded="false"
-      aria-label="Menu"
-    >
-      <i class="bi bi-list"></i>
-    </button>
-    <ul class="dropdown-menu">
-      <li>
-        <div class="dropdown-item-wrapper d-flex justify-content-between align-items-center">
-          Actions:
-        </div>
-      </li>
-      {#each sim_list as simulation}
+<div class="device-container">
+  <div class="controls">
+    <div class="dropdown">
+      <button 
+        class="btn btn-primary" 
+        id="hamburger-btn"
+        type="button" 
+        data-bs-toggle="dropdown" 
+        aria-expanded="false"
+        aria-label="Menu"
+      >
+        <img src="/running-icon.svg" alt="Actions">
+        <span class="dropdown-arrow">▼</span>
+      </button>
+      <ul class="dropdown-menu">
         <li>
-          <div class="">
-            <button
-              class="btn btn-link text-start p-0 flex-grow-1"
-              onclick={() => handleAction(simulation.action)}
-              disabled={simulation.disabled}
-              >
-              {simulation.label}
-            </button>
+          <div class="dropdown-item">
+            Actions:
           </div>
         </li>
-      {/each}
-    </ul>
+        {#each sim_list as simulation}
+          <li>
+            <div class="dropdown-item">
+
+                <ActionInfoDialog
+                  actionLabel = {simulation.label}
+                  actionDesc = {simulation.description}
+                />
+              
+                <button
+                  class="btn btn-primary"
+                  id="action"
+                  onclick={() => handleAction(simulation.action)}
+                  disabled={simulation.disabled}
+                  >
+                {simulation.label}
+                </button>
+              
+            </div>
+          </li>
+        {/each}
+      </ul>
+    </div>
+
+    <div class="status-message">
+      {postureStatus}
+    </div>
+
+    <div class="device-info">
+      <button
+        class="btn btn-secondary"
+        >
+        ⓘ
+      </button>
+    </div>
   </div>
+
+  <!-- Component for the guy -->
+  <div class="demonstration-container">
+    <DeviceDemonstration
+      {stepsCount}
+      {stairsCount}
+      {breathCount}
+      {breathingRate}
+      {postureStatus}
+      {bodyShapeFill}
+      {pantsShapeFill}
+      {pantsShapeStroke}
+      {beltFill}
+      {buckleFrameFill}
+      {bucklePinFill}
+      handleWalk={() => handleWalk()}
+      handleSedentary={() => handleSedentary()}
+      registerElements={(e) => registerElements(e)}
+        />
+  </div> 
 </div>
-
-<!-- Component for the guy -->
-<DeviceDemonstration
-  {stepsCount}
-  {stairsCount}
-  {breathCount}
-  {breathingRate}
-  {postureStatus}
-  {walkButtonText}
-  {sedentaryButtonText}
-  {walkButtonDisabled}
-  {sedentaryButtonDisabled}
-  {bodyShapeFill}
-  {pantsShapeFill}
-  {pantsShapeStroke}
-  {beltFill}
-  {buckleFrameFill}
-  {bucklePinFill}
-  handleWalk={() => handleWalk()}
-  handleSedentary={() => handleSedentary()}
-  registerElements={(e) => registerElements(e)}
-    />
-
 <style>
-  .content-view-container {
-    overflow-y: hidden;
-    height: 100%;
+  .device-container {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    overflow: hidden;
   }
 
+  .demonstration-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  #info {
+    margin-right: 0;
+  }
+
+  #action {
+    margin-left: 0;
+  }
+
+  .status-message {
+    flex: 1; /* Take up remaining width */
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    text-align: center; /* Center text content */
+    padding: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.1); /* Optional: add background for visibility */
+    border-radius: 6px; /* Optional: match other elements */
+    min-height: 2.5rem; /* Optional: ensure consistent height */
+  }
+  
   .controls {
     top: 10px;
     left: 10px;
     z-index: 10;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
   }
 
-  .hamburger-btn {
-    width: 40px;
-    height: 40px;
+  button:hover {
+    background-color: #2980b9;
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+  
+  button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+  }
+
+  #hamburger-btn {
     padding: 8px;
     display: flex;
     align-items: center;
@@ -319,53 +370,21 @@
     border-radius: 6px;
   }
 
-  .hamburger-btn i {
-    font-size: 1.2rem;
+  #hamburger-btn img {
+    width: 1.6rem;
+    height: 1.6rem;
+    filter: invert(1); /* Makes the black icon white */
   }
 
-  button {
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: bold;
+  .dropdown-arrow {
+    font-size: 0.8rem;
     color: white;
-    background-color: #3498db;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition:
-      background-color 0.3s ease,
-      transform 0.1s ease;
+    opacity: 0.8;
+    margin-left: 0.2rem;
   }
 
-  button:hover {
-    background-color: #2980b9;
-  }
-
-  button:active {
-    transform: scale(0.98);
-  }
-
-  button:disabled {
-    background-color: #bdc3c7;
-    cursor: not-allowed;
-  }
-
-  .dropdown-item-wrapper {
-    padding: 0.25rem 1rem;
-  }
-
-  .dropdown-item-wrapper:hover {
-    background-color: #f8f9fa;
-  }
-
-  .dropdown-item-wrapper button:first-child {
-    color: #212529 !important;
-    text-decoration: none !important;
-  }
-
-  .dropdown-item-wrapper button:first-child:disabled {
-    color: #6c757d !important;
-    opacity: 0.65;
+  .dropdown-item {
+    margin: 0.125rem 0.25rem
   }
 
 </style>
