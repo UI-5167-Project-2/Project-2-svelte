@@ -178,6 +178,12 @@
   function handleWalk() {
     const durationSeconds = 10;
     const today = BeltData.getDay(getToday().toISOString());
+    // Each click counts as 10 seconds towards the stand goal. Store as minutes (fractional).
+    if (today) {
+      const addedMinutes = durationSeconds / 60; // 10 seconds -> 0.166666...
+      today.StandMinutes = (today.StandMinutes ?? 0) + addedMinutes;
+      BeltData.updateDay(getToday().toISOString(), today);
+    }
     const initialSteps = today?.StepCount ?? stepsCount;
 
     breathingRate = 18;

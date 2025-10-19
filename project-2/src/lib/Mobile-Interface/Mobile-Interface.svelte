@@ -10,6 +10,25 @@
     [...BeltData.data].find((x) => x[0] === getToday().toISOString())[1]
   );
 
+  // Goals (hard-coded)
+  const STEPS_GOAL = 12000;
+  const STAND_GOAL = 160;
+
+  function pct(value, goal) {
+    const v = Number(value ?? 0);
+    const g = Number(goal ?? 1);
+    if (g === 0) return 0;
+    return Math.min(100, Math.round((v / g) * 100));
+  }
+
+  // reactive helpers for today's progress (use $derived consistent with project)
+  const stepsToday = $derived(today?.StepCount ?? 0);
+  const standToday = $derived(
+    typeof today?.StandMinutes !== 'undefined' && today?.StandMinutes !== null
+      ? today.StandMinutes
+      : null
+  );
+
   // compute totals across all entries
   const totals = $derived(
     (() => {
@@ -112,8 +131,26 @@
         <button class="close" onclick={() => (showGoals = false)}>✕</button>
       </header>
       <section class="qn-body">
-        <p>Steps goal: <strong>12,000 steps per day</strong></p>
-        <p>Stand goal: <strong>160 stand minutes</strong></p>
+        <h3>Steps</h3>
+        <div class="goal-row">
+          <div class="progress" aria-hidden="true">
+            <div class="progress-bar" style="width: {pct(stepsToday, STEPS_GOAL)}%"></div>
+          </div>
+          <p>{stepsToday} / {STEPS_GOAL} ({pct(stepsToday, STEPS_GOAL)}%)</p>
+        </div>
+
+        <h3>Stand</h3>
+        {#if standToday !== null}
+          <div class="goal-row">
+            <div class="progress" aria-hidden="true">
+              <div class="progress-bar stand" style="width: {pct(standToday, STAND_GOAL)}%"></div>
+            </div>
+            <p>{Math.round(standToday * 10) / 10} / {STAND_GOAL} ({pct(standToday, STAND_GOAL)}%)</p>
+          </div>
+        {:else}
+          <p><em>No live stand-minute data available for today.</em></p>
+          <p>Stand goal: <strong>{STAND_GOAL} stand minutes</strong></p>
+        {/if}
       </section>
       <footer class="qn-footer">
         <button onclick={() => (showGoals = false)}>Close</button>
@@ -219,5 +256,31 @@
     border: none;
     font-size: 1.25rem;
     cursor: pointer;
+  }
+
+  .goal-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .progress {
+    background: #e9ecef;
+    border-radius: 999px;
+    width: 220px;
+    height: 14px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #0d6efd, #6ea8fe);
+    width: 0;
+    transition: width 0.3s ease;
+  }
+
+  .progress-bar.stand {
+    background: linear-gradient(90deg, #198754, #63d69b);
   }
 </style>
