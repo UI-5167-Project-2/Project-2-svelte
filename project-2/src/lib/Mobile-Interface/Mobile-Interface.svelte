@@ -2,6 +2,8 @@
   import { BeltData, getToday } from '../Data-Store.svelte.js';
 
   let showQuick = $state(false);
+  let showGoals = $state(false);
+  let showMetricInfo = $state(false);
 
   // current day entry (keeps existing reactive pattern used in the project)
   const today = $derived(
@@ -50,7 +52,9 @@
 <div class="parent-container">
   <h2>Mobile Interface</h2>
     <div class="quick-numbers-action">
-    <button class="qn-button" onclick={() => (showQuick = true)}>Quick Numbers</button>
+      <button class="qn-button" onclick={() => (showQuick = true)}>Quick Numbers</button>
+      <button class="goals-button" onclick={() => (showGoals = true)}>Goals</button>
+      <button class="info-button" onclick={() => (showMetricInfo = true)}>Metric Info</button>
   </div>
   <div class="child-container-body">
     <p>This will be further developed</p>
@@ -100,6 +104,45 @@
   </div>
 {/if}
 
+{#if showGoals}
+  <div class="qn-overlay" role="dialog" aria-modal="true">
+    <div class="qn-panel">
+      <header class="qn-header">
+        <h2>Goals</h2>
+        <button class="close" onclick={() => (showGoals = false)}>✕</button>
+      </header>
+      <section class="qn-body">
+        <p>Steps goal: <strong>12,000 steps per day</strong></p>
+        <p>Stand goal: <strong>160 stand minutes</strong></p>
+      </section>
+      <footer class="qn-footer">
+        <button onclick={() => (showGoals = false)}>Close</button>
+      </footer>
+    </div>
+  </div>
+{/if}
+
+{#if showMetricInfo}
+  <div class="qn-overlay" role="dialog" aria-modal="true">
+    <div class="qn-panel">
+      <header class="qn-header">
+        <h2>Metric Info</h2>
+        <button class="close" onclick={() => (showMetricInfo = false)}>✕</button>
+      </header>
+      <section class="qn-body">
+        <h3>Tracked Metrics</h3>
+        <p><strong>BreathCount</strong>: Number of breaths counted for the day.</p>
+        <p><strong>StepCount</strong>: Number of steps recorded for the day.</p>
+        <p><strong>StairCount</strong>: Number of stair-climbing events recorded for the day.</p>
+        <p>These metrics are collected from the device simulation and aggregated per-day in the data store.</p>
+      </section>
+      <footer class="qn-footer">
+        <button onclick={() => (showMetricInfo = false)}>Close</button>
+      </footer>
+    </div>
+  </div>
+{/if}
+
 <style>
   .quick-numbers-action {
     margin: 0.5rem 0;
@@ -112,6 +155,26 @@
     padding: 0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
+  }
+
+  .goals-button {
+    background: #198754;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+
+  .info-button {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0.5rem;
   }
 
   .qn-overlay {
