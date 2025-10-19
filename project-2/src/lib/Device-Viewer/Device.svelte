@@ -457,5 +457,33 @@
   .device-container {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .demonstration-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  #info {
+    margin-right: 0;
+  }
+
+  #action {
+    margin-left: 0;
+  }
+
+  .status-message {
+    flex: 1; /* Take up remaining width */
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    text-align: center; /* Center text content */
+    padding: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.1); /* Optional: add background for visibility */
+    border-radius: 6px; /* Optional: match other elements */
+    min-height: 2.5rem; /* Optional: ensure consistent height */
   }
 </style>
