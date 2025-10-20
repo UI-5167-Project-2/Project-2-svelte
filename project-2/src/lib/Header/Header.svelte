@@ -4,9 +4,6 @@
 
 <div class="header">
   <h1>Smart Belt</h1>
-  <div class="button-container">
-    <DeviceDescriptionDialog />
-  </div>
 </div>
 
 <style>

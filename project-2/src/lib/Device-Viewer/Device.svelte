@@ -7,6 +7,7 @@
   import { BeltData, getToday } from '../Data-Store.svelte';
   import InLineDialog from '../shared-components/dialog/In-Line-Dialog.svelte';
   import InLineDialogOpenButton from '../shared-components/dialog/In-Line-Dialog-Open-Button.svelte';
+  import DynamicDialog from '../shared-components/dialog/Dynamic-Dialog.svelte';
 
   // --- State Variables (All centralized here) ---
   let stepsCount = $state(0);
@@ -280,7 +281,19 @@
     </div>
 
     <div>
-      <button class="btn btn-secondary" id="device-info" aria-label="DeviceInfo"> <i class="bi bi-info-circle fs-5"></i> </button>
+      {#snippet body()}
+        <p>This is the device description for the smart belt</p>
+      {/snippet}
+
+      <DynamicDialog
+        dialogButtonSeverity="secondary"
+        headerText="Smart Belt Description"
+        hasFooter={false}
+        close={() => {}}
+        buttonIcon="bi bi-info-circle fs-5"
+        {body}
+      />
+      
     </div>
   </div>
 
@@ -296,6 +309,11 @@
       {body}
     />
   {/each}
+
+  {#snippet deviceInfo()}
+    <p>insert description here</p>
+  {/snippet}
+
 
   <!-- Component for the guy -->
   <div class="demonstration-container">
