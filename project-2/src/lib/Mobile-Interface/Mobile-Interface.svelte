@@ -1,9 +1,12 @@
 <script>
   import { BeltData, getToday } from '../Data-Store.svelte.js';
+  import GraphDialog from './GraphDialog.svelte'
 
   let showQuick = $state(false);
   let showGoals = $state(false);
   let showMetricInfo = $state(false);
+  let showGraphs = $state(false);
+
 
   // current day entry (keeps existing reactive pattern used in the project)
   const today = $derived(
@@ -74,6 +77,7 @@
       <button class="qn-button" onclick={() => (showQuick = true)}>Quick Numbers</button>
       <button class="goals-button" onclick={() => (showGoals = true)}>Goals</button>
       <button class="info-button" onclick={() => (showMetricInfo = true)}>Metric Info</button>
+      <button class="graph-button" onclick={() => (showGraphs = true)}>Graphs</button>
   </div>
   <div class="child-container-body">
     <p>This will be further developed</p>
@@ -180,6 +184,11 @@
   </div>
 {/if}
 
+{#if showGraphs}
+  <GraphDialog {BeltData} {showGraphs} onClose={() => showGraphs = false} />
+{/if}
+
+
 <style>
   .quick-numbers-action {
     margin: 0.5rem 0;
@@ -206,6 +215,16 @@
 
   .info-button {
     background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+
+  .graph-button {
+    background: #f12ba5;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
