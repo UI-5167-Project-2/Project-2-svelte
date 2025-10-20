@@ -1,13 +1,13 @@
 <script>
   import { BeltData, getToday } from '../Data-Store.svelte.js';
+  import GraphDialog from './GraphDialog.svelte';
 
   // Metric Info modal control
   let showMetricInfo = $state(false);
+  let showGraphs = $state(false);
 
   // today's entry
-  const today = $derived(
-    [...BeltData.data].find((x) => x[0] === getToday().toISOString())[1]
-  );
+  const today = $derived([...BeltData.data].find((x) => x[0] === getToday().toISOString())[1]);
 
   // Goals (hard-coded)
   const STEPS_GOAL = 6000;
@@ -34,9 +34,9 @@
       const arr = [...BeltData.data];
       return arr.reduce(
         (acc, [, v]) => {
-          acc.BreathCount += (v?.BreathCount) ?? 0;
-          acc.StepCount += (v?.StepCount) ?? 0;
-          acc.StairCount += (v?.StairCount) ?? 0;
+          acc.BreathCount += v?.BreathCount ?? 0;
+          acc.StepCount += v?.StepCount ?? 0;
+          acc.StairCount += v?.StairCount ?? 0;
           return acc;
         },
         { BreathCount: 0, StepCount: 0, StairCount: 0 }
@@ -50,9 +50,9 @@
       const n = arr.length || 1;
       const sums = arr.reduce(
         (acc, [, v]) => {
-          acc.BreathCount += (v?.BreathCount) ?? 0;
-          acc.StepCount += (v?.StepCount) ?? 0;
-          acc.StairCount += (v?.StairCount) ?? 0;
+          acc.BreathCount += v?.BreathCount ?? 0;
+          acc.StepCount += v?.StepCount ?? 0;
+          acc.StairCount += v?.StairCount ?? 0;
           return acc;
         },
         { BreathCount: 0, StepCount: 0, StairCount: 0 }
@@ -167,13 +167,20 @@
         <p><strong>BreathCount</strong>: Number of breaths counted for the day.</p>
         <p><strong>StepCount</strong>: Number of steps recorded for the day.</p>
         <p><strong>StairCount</strong>: Number of stair-climbing events recorded for the day.</p>
-        <p>These metrics are collected from the device simulation and aggregated per-day in the data store.</p>
+        <p>
+          These metrics are collected from the device simulation and aggregated per-day in the data
+          store.
+        </p>
       </section>
       <footer class="qn-footer">
         <button onclick={() => (showMetricInfo = false)}>Close</button>
       </footer>
     </div>
   </div>
+{/if}
+
+{#if showGraphs}
+  <GraphDialog {BeltData} {showGraphs} onClose={() => (showGraphs = false)} />
 {/if}
 
 <style>
@@ -227,6 +234,26 @@
 
   .info-button {
     background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+
+  .graph-button {
+    background: #f12ba5;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+
+  .graph-button {
+    background: #f12ba5;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -305,4 +332,3 @@
     background: linear-gradient(90deg, #198754, #63d69b);
   }
 </style>
-

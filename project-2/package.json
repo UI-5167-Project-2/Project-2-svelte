@@ -12,5 +12,9 @@
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "svelte": "^5.28.1",
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "svelte-apexcharts": "^1.0.2"
   }
 }
