@@ -18,6 +18,7 @@
   const sim_list = $state([
     // Add new actions in this format whenever a new function is created.
     {
+      id: "walk",
       action: handleWalk,
       label: 'Start 10s Walk/Run',
       description:
@@ -25,6 +26,7 @@
       disabled: false,
     },
     {
+      id: "sedentary",
       action: handleSedentary,
       label: 'Simulate 30s Sedentary',
       description:
@@ -32,6 +34,7 @@
       disabled: false,
     },
     {
+      id: "test",
       action: () => {
         sim_list.forEach((button) => (button.disabled = false));
       },
@@ -245,7 +248,7 @@
         aria-expanded="false"
         aria-label="Menu"
       >
-        <img src="/running-icon.svg" alt="Actions" />
+        <i class="bi bi-person-walking fs-5"></i>
         <span class="dropdown-arrow">▼</span>
       </button>
       <ul class="dropdown-menu">
@@ -255,7 +258,7 @@
         {#each sim_list as simulation}
           <li>
             <div class="dropdown-item">
-              <InLineDialogOpenButton generatedID="{simulation.id}dialog" buttonLabel="ⓘ" />
+              <InLineDialogOpenButton generatedID="{simulation.id}dialog" buttonIcon="bi bi-info-circle fs-5 " />
 
               <button
                 class="btn btn-primary"
@@ -272,11 +275,12 @@
     </div>
 
     <div class="status-message">
-      {postureStatus}
+      
+        {postureStatus}
     </div>
 
-    <div class="device-info">
-      <button class="btn btn-secondary"> ⓘ </button>
+    <div>
+      <button class="btn btn-secondary" id="device-info" aria-label="DeviceInfo"> <i class="bi bi-info-circle fs-5"></i> </button>
     </div>
   </div>
 
@@ -313,17 +317,12 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    overflow: hidden;
   }
 
   .demonstration-container {
     flex: 1;
     display: flex;
     overflow: hidden;
-  }
-
-  #action {
-    margin-left: 0;
   }
 
   .status-message {
@@ -346,6 +345,8 @@
     flex-direction: row;
     align-items: center;
     gap: 1em;
+    min-height: 3em;
+    max-height: 3em;
   }
 
   button:hover {
@@ -359,20 +360,6 @@
   button:disabled {
     background-color: #bdc3c7;
     cursor: not-allowed;
-  }
-
-  #hamburger-btn {
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-  }
-
-  #hamburger-btn img {
-    width: 1.6rem;
-    height: 1.6rem;
-    filter: invert(1); /* Makes the black icon white */
   }
 
   .dropdown-arrow {

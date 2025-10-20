@@ -229,8 +229,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    padding: 1em;
+    padding: 1em 0em;
+    
     flex: 1; /* Allows it to take equal space */
     min-width: 300px;
     position: relative;
@@ -248,7 +248,9 @@
     height: 100%;
     max-width: 100%;
     max-height: 100%;
-    flex-shrink: 1; /* Allow SVG to shrink if needed */
+    flex: 1; /* Allow SVG to shrink if needed */
+    min-height: 0;
+    object-fit: contain;
   }
 
   path,
