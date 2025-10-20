@@ -4,10 +4,6 @@
 
   // --- Props Received from Parent (App.svelte) ---
   let {
-    stepsCount,
-    stairsCount,
-    breathCount,
-    breathingRate,
     postureStatus,
     bodyShapeFill,
     pantsShapeFill,
@@ -15,8 +11,6 @@
     beltFill,
     buckleFrameFill,
     bucklePinFill,
-    handleWalk = null,
-    handleSedentary = null,
     registerElements = null,
   } = $props();
 
@@ -137,17 +131,16 @@
 </script>
 
 <div class="container">
-
   <!-- the guy -->
   <svg
-    style="min-width: 300px; min-height: 360px;"
     width="100%"
     height="100%"
     viewBox="0 0 100 120"
     xmlns="http://www.w3.org/2000/svg"
     preserveAspectRatio="xMidYMid meet"
   >
-    <defs> <!-- SVG Gradients -->
+    <defs>
+      <!-- SVG Gradients -->
       <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" style="stop-color: #b0e0ed; stop-opacity: 1" />
         <stop offset="50%" style="stop-color: #a0d2eb; stop-opacity: 1" />
@@ -194,17 +187,9 @@
       stroke-width="1"
       transform-origin="50 75"
     ></path>
-    
+
     <!-- Belt -->
-    <rect 
-      bind:this={belt} 
-      x="20" 
-      y="52" 
-      width="60" 
-      height="10" 
-      fill={beltFill} 
-      rx="3" 
-      ry="3"
+    <rect bind:this={belt} x="20" y="52" width="60" height="10" fill={beltFill} rx="3" ry="3"
     ></rect>
 
     <!-- Belt Buckle -->
@@ -237,7 +222,6 @@
       transform-origin="50 57"
     ></rect>
   </svg>
-
 </div>
 
 <style>
@@ -245,7 +229,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    
+
     padding: 1em;
     flex: 1; /* Allows it to take equal space */
     min-width: 300px;

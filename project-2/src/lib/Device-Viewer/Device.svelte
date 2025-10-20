@@ -5,6 +5,8 @@
   import DeviceCloseUp from './Device-Close-Up.svelte';
   // @ts-ignore
   import { BeltData, getToday } from '../Data-Store.svelte';
+  import InLineDialog from '../shared-components/dialog/In-Line-Dialog.svelte';
+  import InLineDialogOpenButton from '../shared-components/dialog/In-Line-Dialog-Open-Button.svelte';
 
   // --- State Variables (All centralized here) ---
   let stepsCount = $state(0);
@@ -18,21 +20,25 @@
     {
       action: handleWalk,
       label: 'Start 10s Walk/Run',
-      description: 'Simulates walking activity. This will increase your step count and show walking animations on the device visualization.',
-      disabled: false
+      description:
+        'Simulates walking activity. This will increase your step count and show walking animations on the device visualization.',
+      disabled: false,
     },
     {
       action: handleSedentary,
       label: 'Simulate 30s Sedentary',
-      description: 'Simulates sedentary activity like sitting or standing still. This will show appropriate posture status and breathing animations.',
-      disabled: false
+      description:
+        'Simulates sedentary activity like sitting or standing still. This will show appropriate posture status and breathing animations.',
+      disabled: false,
     },
     {
-      action: () => {sim_list.forEach((button) => button.disabled = false) },
-      label: "Test Item",
-      description: "This item is a test.",
-      disabled: false
-    }
+      action: () => {
+        sim_list.forEach((button) => (button.disabled = false));
+      },
+      label: 'Test Item',
+      description: 'This item is a test.',
+      disabled: false,
+    },
   ]);
 
   // State for DeviceViewer
@@ -134,11 +140,11 @@
 
     // Disable all action buttons to prepare for an action. Buttons are re-enabled in
     // `stopAllActivity()`
-  sim_list.forEach((button) => {
-    button.disabled = true;
-  })
-  // Call the function for the action
-  action()
+    sim_list.forEach((button) => {
+      button.disabled = true;
+    });
+    // Call the function for the action
+    action();
   }
 
   function handleWalk() {
@@ -231,41 +237,34 @@
 <div class="device-container">
   <div class="controls">
     <div class="dropdown">
-      <button 
-        class="btn btn-primary" 
+      <button
+        class="btn btn-primary"
         id="hamburger-btn"
-        type="button" 
-        data-bs-toggle="dropdown" 
+        type="button"
+        data-bs-toggle="dropdown"
         aria-expanded="false"
         aria-label="Menu"
       >
-        <img src="/running-icon.svg" alt="Actions">
+        <img src="/running-icon.svg" alt="Actions" />
         <span class="dropdown-arrow">▼</span>
       </button>
       <ul class="dropdown-menu">
         <li>
-          <div class="dropdown-item">
-            Actions:
-          </div>
+          <div class="dropdown-item">Actions:</div>
         </li>
         {#each sim_list as simulation}
           <li>
             <div class="dropdown-item">
+              <InLineDialogOpenButton generatedID="{simulation.id}dialog" buttonLabel="ⓘ" />
 
-                <ActionInfoDialog
-                  actionLabel = {simulation.label}
-                  actionDesc = {simulation.description}
-                />
-              
-                <button
-                  class="btn btn-primary"
-                  id="action"
-                  onclick={() => handleAction(simulation.action)}
-                  disabled={simulation.disabled}
-                  >
+              <button
+                class="btn btn-primary"
+                id="action"
+                onclick={() => handleAction(simulation.action)}
+                disabled={simulation.disabled}
+              >
                 {simulation.label}
-                </button>
-              
+              </button>
             </div>
           </li>
         {/each}
@@ -277,21 +276,26 @@
     </div>
 
     <div class="device-info">
-      <button
-        class="btn btn-secondary"
-        >
-        ⓘ
-      </button>
+      <button class="btn btn-secondary"> ⓘ </button>
     </div>
   </div>
+
+  {#each sim_list as simulation}
+    {#snippet body()}
+      <p>{simulation.description}</p>
+    {/snippet}
+    <InLineDialog
+      generatedID="{simulation.id}dialog"
+      headerText={simulation.label}
+      hasFooter={false}
+      close={() => {}}
+      {body}
+    />
+  {/each}
 
   <!-- Component for the guy -->
   <div class="demonstration-container">
     <DeviceDemonstration
-      {stepsCount}
-      {stairsCount}
-      {breathCount}
-      {breathingRate}
       {postureStatus}
       {bodyShapeFill}
       {pantsShapeFill}
@@ -299,12 +303,11 @@
       {beltFill}
       {buckleFrameFill}
       {bucklePinFill}
-      handleWalk={() => handleWalk()}
-      handleSedentary={() => handleSedentary()}
       registerElements={(e) => registerElements(e)}
-        />
-  </div> 
+    />
+  </div>
 </div>
+
 <style>
   .device-container {
     display: flex;
@@ -317,10 +320,6 @@
     flex: 1;
     display: flex;
     overflow: hidden;
-  }
-
-  #info {
-    margin-right: 0;
   }
 
   #action {
@@ -338,7 +337,7 @@
     border-radius: 6px; /* Optional: match other elements */
     min-height: 2.5rem; /* Optional: ensure consistent height */
   }
-  
+
   .controls {
     top: 10px;
     left: 10px;
@@ -352,11 +351,11 @@
   button:hover {
     background-color: #2980b9;
   }
-  
+
   button:active {
     transform: scale(0.98);
   }
-  
+
   button:disabled {
     background-color: #bdc3c7;
     cursor: not-allowed;
@@ -382,9 +381,4 @@
     opacity: 0.8;
     margin-left: 0.2rem;
   }
-
-  .dropdown-item {
-    margin: 0.125rem 0.25rem
-  }
-
 </style>
