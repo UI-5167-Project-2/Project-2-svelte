@@ -11,8 +11,8 @@
   );
 
   // Goals (hard-coded)
-  const STEPS_GOAL = 12000;
-  const STAND_GOAL = 160;
+  const STEPS_GOAL = 7000;
+  const STAND_GOAL = 50;
 
   function pct(value, goal) {
     const v = Number(value ?? 0);
