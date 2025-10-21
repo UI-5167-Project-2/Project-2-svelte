@@ -67,22 +67,23 @@
 
 <div class="d-flex flex-row justify-content-between align-items-center mb-2">
   <h4 class="m-0">Weekly Summary</h4>
-  <!-- svelte-ignore a11y_consider_explicit_label -->
-  <button class="btn btn-light" bind:this={powerButton} onclick={() => powerPressed()}
-    ><i
-      class="bi bi-power svg-icon-power"
-      style="color: {!isPowered ? 'green' : 'red'};"
-      title="Turn: {!isPowered ? 'On' : 'Off'}"
-    ></i></button
-  >
-  <DynamicDialog
-    body={metricInfo}
-    buttonLabel="Metric Info"
-    dialogButtonSeverity="secondary"
-    headerText="Metric Info"
-    hasFooter={false}
-    close={() => {}}
-  />
+  <div class="d-flex flex-row gap-2">
+    <button class="btn btn-light" bind:this={powerButton} onclick={() => powerPressed()}
+      ><i
+        class="bi bi-power svg-icon-power"
+        style="color: {!isPowered ? 'green' : 'red'};"
+        title="Turn: {!isPowered ? 'On' : 'Off'}"
+      ></i>Power</button
+    >
+    <DynamicDialog
+      body={metricInfo}
+      buttonLabel="Metric Info"
+      dialogButtonSeverity="secondary"
+      headerText="Metric Info"
+      hasFooter={false}
+      close={() => {}}
+    />
+  </div>
 </div>
 <table class="qn-table">
   <thead>

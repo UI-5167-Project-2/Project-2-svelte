@@ -74,6 +74,22 @@
     });
   };
 
+  const startStairVisuals = () => {
+    [belt, buckleFrame, bucklePin].forEach((element) => {
+      if (element && typeof element.animate === 'function') {
+        element.animate(
+          [
+            { transform: 'rotate(0deg) translateX(0px)' },
+            { transform: 'rotate(2deg) translateX(1px)' },
+            { transform: 'rotate(-2deg) translateX(-1px)' },
+            { transform: 'rotate(0deg) translateX(0px)' },
+          ],
+          { duration: 100, iterations: Infinity }
+        );
+      }
+    });
+  };
+
   const startBadPostureShake = () => {
     [buckleFrame, bucklePin].forEach((element) => {
       if (element && typeof element.animate === 'function') {
@@ -111,6 +127,15 @@
       }
     } else if (postureStatus === '❌ Bad Posture/Move!') {
       startBadPostureShake();
+    } else if (postureStatus === 'Climbing Stairs') {
+      startStairVisuals();
+      startBreathingVisuals();
+      // Speed up animation to simulate higher activity
+      if (animatedElements) {
+        animatedElements.forEach((el) =>
+          el.getAnimations().forEach((anim) => (anim.playbackRate = 5000 / 2000))
+        );
+      }
     }
   });
 

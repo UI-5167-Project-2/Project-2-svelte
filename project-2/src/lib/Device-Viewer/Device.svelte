@@ -120,7 +120,7 @@
       const today = BeltData.getDay(getToday().toISOString());
       if (today && DeviceStatus.getStatus() === 'wifi') {
         breathCount++;
-        today.BreathCount = breathCount;
+        today.BreathCount = today.BreathCount + 1;
         BeltData.updateDay(getToday().toISOString(), today);
       }
     }, intervalMs);
@@ -245,11 +245,11 @@
     const initialStairs = today.StairCount ?? stairsCount;
     const initialSteps = today.StepCount ?? stepsCount;
 
-    breathingRate = 24;
+    breathingRate = 30;
     startBreathingCount(breathingRate);
     startWalkingMotion();
 
-    postureStatus = 'Going Up Stairs';
+    postureStatus = 'Climbing Stairs';
 
     let elapsedUpdates = 0;
     const intervalTime = 100;

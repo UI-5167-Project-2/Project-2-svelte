@@ -1,0 +1,42 @@
+<svg 
+    viewBox="0 0 100 100" 
+    xmlns="http://www.w3.org/2000/svg" 
+    preserveAspectRatio="xMidYMid meet"
+>
+    <defs>
+        <linearGradient id="buckleFrameGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: #e0e0e0; stop-opacity: 1"></stop>
+          <stop offset="50%" style="stop-color: #c0c0c0; stop-opacity: 1"></stop>
+          <stop offset="100%" style="stop-color: #a0a0a0; stop-opacity: 1"></stop>
+        </linearGradient>
+        <linearGradient id="bucklePinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: #5c6e7d; stop-opacity: 1"></stop>
+          <stop offset="50%" style="stop-color: #34495e; stop-opacity: 1"></stop>
+          <stop offset="100%" style="stop-color: #1e2833; stop-opacity: 1"></stop>
+        </linearGradient>
+    </defs>
+
+    <rect 
+        x="15" 
+        y="10" 
+        width="70" 
+        height="80" 
+        rx="10" ry="10" 
+        fill="url(#buckleFrameGradient)" 
+        stroke="#7f8c8d" 
+        stroke-width="8" 
+        transform-origin="50 50"
+    ></rect>
+
+    <rect 
+        x="40" 
+        y="25" 
+        width="20" 
+        height="50" 
+        rx="3" ry="3" 
+        fill="url(#bucklePinGradient)" 
+        stroke="#2c3e50" 
+        stroke-width="2" 
+        transform-origin="50 50"
+    ></rect>
+</svg>
