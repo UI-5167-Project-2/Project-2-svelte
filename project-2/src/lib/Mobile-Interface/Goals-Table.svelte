@@ -35,7 +35,7 @@
     <tr>
       <td>Steps ({STEPS_GOAL})</td>
       <td>{stepsToday}</td>
-      <td>
+      <td class="d-flex flex-row align-items-center">
         <div class="progress" aria-hidden="true">
           <div class="progress-bar" style="width: {pct(stepsToday, STEPS_GOAL)}%"></div>
         </div>
@@ -45,7 +45,7 @@
     <tr>
       <td>Stand minutes ({STAND_GOAL})</td>
       <td>{standToday !== null ? Math.round(standToday * 10) / 10 : '—'}</td>
-      <td>
+      <td class="d-flex flex-row align-items-center">
         {#if standToday !== null}
           <div class="progress" aria-hidden="true">
             <div class="progress-bar stand" style="width: {pct(standToday, STAND_GOAL)}%"></div>

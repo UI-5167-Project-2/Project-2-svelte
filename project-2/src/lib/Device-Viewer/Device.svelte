@@ -9,6 +9,7 @@
   import InLineDialogOpenButton from '../shared-components/dialog/In-Line-Dialog-Open-Button.svelte';
   import DynamicDialog from '../shared-components/dialog/Dynamic-Dialog.svelte';
   import NumberLine from '../shared-components/Number-Line.svelte';
+  import { DeviceStatus } from '../Device-Status-Store.svelte';
 
   // --- State Variables (All centralized here) ---
   let stepsCount = $state(0);
@@ -21,6 +22,8 @@
   let timeRanges = $state([]); // Track time ranges
   let currentSimulationTime = $state(0);
 
+  const statusText = $derived(DeviceStatus.getStatus());
+
   const sim_list = $state([
     // Add new actions in this format whenever a new function is created.
     {
@@ -32,9 +35,17 @@
       disabled: false,
     },
     {
+      id: 'stair',
+      action: handleStairs,
+      label: 'Start 10s Walk up Stairs',
+      description:
+        'Simulates going up stairs activity. This will increase your stair count and show walking animations on the device visualization.',
+      disabled: false,
+    },
+    {
       id: 'sedentary',
       action: handleSedentary,
-      label: 'Simulate 30s Sedentary',
+      label: 'Simulate Sedentary Alert',
       description:
         'Simulates sedentary activity like sitting or standing still. This will show appropriate posture status and breathing animations.',
       disabled: false,
@@ -47,15 +58,15 @@
         'Simulates a day through wearing the belt, given a few ranges of time. During these ranges, the belt will be considered inactive. ',
       disabled: false,
     },
-    {
-      id: 'test',
-      action: () => {
-        sim_list.forEach((button) => (button.disabled = false));
-      },
-      label: 'Test Item',
-      description: 'This item is a test.',
-      disabled: false,
-    },
+    // {
+    //   id: 'test',
+    //   action: () => {
+    //     sim_list.forEach((button) => (button.disabled = false));
+    //   },
+    //   label: 'Test Item',
+    //   description: 'This item is a test.',
+    //   disabled: false,
+    // },
   ]);
 
   // Effect to update DND button based on invalidTimeRange and timeRanges
@@ -106,9 +117,9 @@
     const intervalMs = (60 / rate) * 1000;
 
     breathingInterval = setInterval(() => {
-      breathCount++;
       const today = BeltData.getDay(getToday().toISOString());
-      if (today) {
+      if (today && DeviceStatus.getStatus() === 'wifi') {
+        breathCount++;
         today.BreathCount = breathCount;
         BeltData.updateDay(getToday().toISOString(), today);
       }
@@ -179,7 +190,7 @@
     const durationSeconds = 10;
     const today = BeltData.getDay(getToday().toISOString());
     // Each click counts as 10 seconds towards the stand goal. Store as minutes (fractional).
-    if (today) {
+    if (today && DeviceStatus.getStatus() === 'wifi') {
       const addedMinutes = durationSeconds / 60; // 10 seconds -> 0.166666...
       today.StandMinutes = (today.StandMinutes ?? 0) + addedMinutes;
       BeltData.updateDay(getToday().toISOString(), today);
@@ -202,19 +213,64 @@
     animationInterval = setInterval(() => {
       elapsedUpdates++;
       if (elapsedUpdates < totalUpdates) {
-        stepsCount = Math.round((elapsedUpdates / totalUpdates) * 150 + initialSteps);
-
         const today = BeltData.getDay(getToday().toISOString());
-        if (today) {
+        if (today && DeviceStatus.getStatus() === 'wifi') {
+          stepsCount = Math.round((elapsedUpdates / totalUpdates) * 150 + initialSteps);
           today.StepCount = stepsCount;
-          if (elapsedUpdates > totalUpdates / 2) {
-            today.StairCount = finalStairs;
-          }
           BeltData.updateDay(getToday().toISOString(), today);
         }
 
         if (elapsedUpdates > totalUpdates / 2) {
           stairsCount = finalStairs;
+        }
+      } else {
+        clearInterval(animationInterval);
+
+        setTimeout(() => {
+          stopAllActivity();
+        }, 2000);
+      }
+    }, intervalTime);
+  }
+
+  function handleStairs() {
+    const durationSeconds = 10;
+    const today = BeltData.getDay(getToday().toISOString());
+    // Each click counts as 10 seconds towards the stand goal. Store as minutes (fractional).
+    if (today && DeviceStatus.getStatus() === 'wifi') {
+      const addedMinutes = (durationSeconds * 6) / 60; // 10 seconds -> 0.166666...
+      today.StandMinutes = (today.StandMinutes ?? 0) + addedMinutes;
+      BeltData.updateDay(getToday().toISOString(), today);
+    }
+    const initialStairs = today.StairCount ?? stairsCount;
+    const initialSteps = today.StepCount ?? stepsCount;
+
+    breathingRate = 24;
+    startBreathingCount(breathingRate);
+    startWalkingMotion();
+
+    postureStatus = 'Going Up Stairs';
+
+    let elapsedUpdates = 0;
+    const intervalTime = 100;
+    const totalUpdates = (durationSeconds * 1000) / intervalTime;
+
+    const finalSteps = initialStairs + 50;
+
+    animationInterval = setInterval(() => {
+      elapsedUpdates++;
+      if (elapsedUpdates < totalUpdates) {
+        const today = BeltData.getDay(getToday().toISOString());
+        if (today && DeviceStatus.getStatus() === 'wifi') {
+          stairsCount = Math.round((elapsedUpdates / totalUpdates) * 50 + initialStairs);
+          stepsCount = Math.round((elapsedUpdates / totalUpdates) * 50 + initialSteps);
+          today.StairCount = stairsCount;
+          today.StepCount = stepsCount;
+          BeltData.updateDay(getToday().toISOString(), today);
+        }
+
+        if (elapsedUpdates > totalUpdates / 2) {
+          // stairsCount = finalStairs;
         }
       } else {
         clearInterval(animationInterval);
@@ -325,7 +381,7 @@
 
           // Track activity
           const today = BeltData.getDay(getToday().toISOString());
-          if (today) {
+          if (today && DeviceStatus.getStatus() === 'wifi') {
             today.StepCount += Math.floor(Math.random() * 50) + 20; // Random steps
             BeltData.updateDay(getToday().toISOString(), today);
             stepsCount = today.StepCount;
@@ -373,6 +429,7 @@
         data-bs-toggle="dropdown"
         aria-expanded="false"
         aria-label="Menu"
+        disabled={statusText !== 'wifi'}
       >
         <i class="bi bi-person-walking fs-5"></i>
         <span class="dropdown-arrow">▼</span>
@@ -450,7 +507,14 @@
     />
   </div>
 
-  <NumberLine bind:disableButton={invalidTimeRange} bind:ranges={timeRanges} />
+  <NumberLine
+    switchEnable={true}
+    label="Enable Do Not Disturb Hours simulation?"
+    switchAlternateLabel="Use the range to select Do Not Disturb Hours"
+    bind:disableButton={invalidTimeRange}
+    bind:ranges={timeRanges}
+    disabled={statusText !== 'wifi'}
+  />
 </div>
 
 <style>

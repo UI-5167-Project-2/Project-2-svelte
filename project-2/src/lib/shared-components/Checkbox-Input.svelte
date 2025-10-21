@@ -8,7 +8,12 @@
 <script>
   import { generateDialogID } from '../utils/dynamic-dialog-id';
 
-  let { value = $bindable(undefined), label = '', generatedID = generateDialogID() } = $props();
+  let {
+    value = $bindable(undefined),
+    label = '',
+    generatedID = generateDialogID(),
+    disabled = false,
+  } = $props();
 </script>
 
 <div class="container mt-4">
@@ -20,6 +25,7 @@
         role="switch"
         id="flexSwitchCheckDefault-{generatedID}"
         bind:checked={value}
+        {disabled}
       />
       <label
         class="form-check-label ms-2 no-select cursor-pointer"

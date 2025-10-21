@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { BeltData, getToday } from '../Data-Store.svelte.js';
+  import { DeviceStatus } from '../Device-Status-Store.svelte.js';
 
   // --- Props Received from Parent (App.svelte) ---
   let {
@@ -26,6 +26,9 @@
 
   // Animation management variables (Internal to this component)
   let initialAnimationInterval;
+
+  const isPowered = $derived(DeviceStatus.poweredOn);
+  const statusText = $derived(DeviceStatus.getStatus());
 
   // --- Animation Logic (Reacting to Prop/State Changes in Parent) ---
 
@@ -131,97 +134,114 @@
 </script>
 
 <div class="container">
-  <!-- the guy -->
-  <svg
-    width="100%"
-    height="100%"
-    viewBox="0 0 100 120"
-    xmlns="http://www.w3.org/2000/svg"
-    preserveAspectRatio="xMidYMid meet"
-  >
-    <defs>
-      <!-- SVG Gradients -->
-      <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color: #b0e0ed; stop-opacity: 1" />
-        <stop offset="50%" style="stop-color: #a0d2eb; stop-opacity: 1" />
-        <stop offset="100%" style="stop-color: #80b0d3; stop-opacity: 1" />
-      </linearGradient>
-      <linearGradient id="pantsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color: #4a657f; stop-opacity: 1" />
-        <stop offset="50%" style="stop-color: #34495e; stop-opacity: 1" />
-        <stop offset="100%" style="stop-color: #202e3b; stop-opacity: 1" />
-      </linearGradient>
-      <linearGradient id="beltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color: #8d6e63; stop-opacity: 1" />
-        <stop offset="50%" style="stop-color: #6d4c41; stop-opacity: 1" />
-        <stop offset="100%" style="stop-color: #5a3f35; stop-opacity: 1" />
-      </linearGradient>
-      <linearGradient id="buckleFrameGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color: #e0e0e0; stop-opacity: 1" />
-        <stop offset="50%" style="stop-color: #c0c0c0; stop-opacity: 1" />
-        <stop offset="100%" style="stop-color: #a0a0a0; stop-opacity: 1" />
-      </linearGradient>
-      <linearGradient id="bucklePinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color: #5c6e7d; stop-opacity: 1" />
-        <stop offset="50%" style="stop-color: #34495e; stop-opacity: 1" />
-        <stop offset="100%" style="stop-color: #1e2833; stop-opacity: 1" />
-      </linearGradient>
-    </defs>
+  <div class="svg-wrapper">
+    <div class="svg-overlay-icons">
+      <i
+        class="bi bi-power svg-icon-power"
+        style="color: {isPowered ? 'green' : 'red'};"
+        title="Power: {isPowered ? 'On' : 'Off'}"
+      ></i>
+      <i
+        class="bi bi-{statusText} svg-icon-status"
+        style="color: {statusText == 'wifi'
+          ? 'green'
+          : statusText == 'wifi-1' || statusText == 'wifi-2'
+            ? 'yellow'
+            : 'red'};"
+        title="Status: {statusText == 'wifi'
+          ? 'Connected'
+          : statusText == 'wifi-1' || statusText == 'wifi-2'
+            ? 'Pairing'
+            : 'Disconnected'}"
+      ></i>
+    </div>
 
-    <!-- Shirt -->
-    <path
-      bind:this={bodyShape}
-      d="M 20 0 L 20 45 L 80 45 L 80 0 Z"
-      fill={bodyShapeFill}
-      stroke="#333"
-      stroke-width="1"
-      transform-origin="50 30"
-    ></path>
+    <svg
+      width="100%"
+      height="100%"
+      viewBox="0 0 100 120"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
+      style="opacity: {statusText == 'wifi' ? '1' : 0.4}"
+    >
+      <defs>
+        <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: #b0e0ed; stop-opacity: 1" />
+          <stop offset="50%" style="stop-color: #a0d2eb; stop-opacity: 1" />
+          <stop offset="100%" style="stop-color: #80b0d3; stop-opacity: 1" />
+        </linearGradient>
+        <linearGradient id="pantsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: #4a657f; stop-opacity: 1" />
+          <stop offset="50%" style="stop-color: #34495e; stop-opacity: 1" />
+          <stop offset="100%" style="stop-color: #202e3b; stop-opacity: 1" />
+        </linearGradient>
+        <linearGradient id="beltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: #8d6e63; stop-opacity: 1" />
+          <stop offset="50%" style="stop-color: #6d4c41; stop-opacity: 1" />
+          <stop offset="100%" style="stop-color: #5a3f35; stop-opacity: 1" />
+        </linearGradient>
+        <linearGradient id="buckleFrameGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: #e0e0e0; stop-opacity: 1" />
+          <stop offset="50%" style="stop-color: #c0c0c0; stop-opacity: 1" />
+          <stop offset="100%" style="stop-color: #a0a0a0; stop-opacity: 1" />
+        </linearGradient>
+        <linearGradient id="bucklePinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: #5c6e7d; stop-opacity: 1" />
+          <stop offset="50%" style="stop-color: #34495e; stop-opacity: 1" />
+          <stop offset="100%" style="stop-color: #1e2833; stop-opacity: 1" />
+        </linearGradient>
+      </defs>
 
-    <!-- Pants -->
-    <path
-      bind:this={pantsShape}
-      d="M 80 45 L 80 55 L 80 90 C 80 100, 70 105, 53 105 L 53 80 L 48 80 L 48 105 C 30 105, 20 100, 20 90 L 20 55 L 20 45 Z"
-      fill={pantsShapeFill}
-      stroke={pantsShapeStroke}
-      stroke-width="1"
-      transform-origin="50 75"
-    ></path>
+      <path
+        bind:this={bodyShape}
+        d="M 20 0 L 20 45 L 80 45 L 80 0 Z"
+        fill={bodyShapeFill}
+        stroke="#333"
+        stroke-width="1"
+        transform-origin="50 30"
+      ></path>
 
-    <!-- Belt -->
-    <rect bind:this={belt} x="20" y="52" width="60" height="10" fill={beltFill} rx="3" ry="3"
-    ></rect>
+      <path
+        bind:this={pantsShape}
+        d="M 80 45 L 80 55 L 80 90 C 80 100, 70 105, 53 105 L 53 80 L 48 80 L 48 105 C 30 105, 20 100, 20 90 L 20 55 L 20 45 Z"
+        fill={pantsShapeFill}
+        stroke={pantsShapeStroke}
+        stroke-width="1"
+        transform-origin="50 75"
+      ></path>
 
-    <!-- Belt Buckle -->
-    <rect
-      bind:this={buckleFrame}
-      x="42"
-      y="50"
-      width="16"
-      height="14"
-      rx="3"
-      ry="3"
-      fill={buckleFrameFill}
-      stroke="#7f8c8d"
-      stroke-width="1.5"
-      transform-origin="50 57"
-    ></rect>
+      <rect bind:this={belt} x="20" y="52" width="60" height="10" fill={beltFill} rx="3" ry="3"
+      ></rect>
 
-    <!-- Belt Pin -->
-    <rect
-      bind:this={bucklePin}
-      x="48"
-      y="53"
-      width="4"
-      height="8"
-      rx="1"
-      ry="1"
-      fill={bucklePinFill}
-      stroke="#2c3e50"
-      stroke-width="0.5"
-      transform-origin="50 57"
-    ></rect>
-  </svg>
+      <rect
+        bind:this={buckleFrame}
+        x="42"
+        y="50"
+        width="16"
+        height="14"
+        rx="3"
+        ry="3"
+        fill={buckleFrameFill}
+        stroke="#7f8c8d"
+        stroke-width="1.5"
+        transform-origin="50 57"
+      ></rect>
+
+      <rect
+        bind:this={bucklePin}
+        x="48"
+        y="53"
+        width="4"
+        height="8"
+        rx="1"
+        ry="1"
+        fill={bucklePinFill}
+        stroke="#2c3e50"
+        stroke-width="0.5"
+        transform-origin="50 57"
+      ></rect>
+    </svg>
+  </div>
 </div>
 
 <style>
@@ -238,6 +258,33 @@
     height: 100%;
     overflow: hidden; /* Prevent scrolling */
     box-sizing: border-box; /* Include padding in height calculation */
+  }
+
+  /* Wrapper for the SVG to set position context for the internal icons */
+  .svg-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex; /* Helps ensure SVG fills the space */
+    justify-content: center;
+    align-items: center;
+  }
+
+  .svg-overlay-icons {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+    background-color: darkgray;
+    border-radius: 5px;
+  }
+  .svg-overlay-icons i {
+    font-size: 1.5rem; /* Large icons */
+    line-height: 1; /* Fixes vertical alignment */
   }
 
   svg {

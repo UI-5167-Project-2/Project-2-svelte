@@ -1,6 +1,11 @@
 <script>
   import { BeltData } from '../Data-Store.svelte';
+  import { DeviceStatus } from '../Device-Status-Store.svelte';
+  import Device from '../Device-Viewer/Device.svelte';
   import DynamicDialog from '../shared-components/dialog/Dynamic-Dialog.svelte';
+
+  const isPowered = $derived(DeviceStatus.poweredOn);
+  let powerButton;
 
   // totals and averages
   const totals = $derived(
@@ -38,6 +43,16 @@
       };
     })()
   );
+
+  function powerPressed() {
+    if (powerButton) {
+      powerButton.disabled = true;
+      setTimeout(() => {
+        powerButton.disabled = false;
+      }, 1500);
+    }
+    DeviceStatus.changePower();
+  }
 </script>
 
 {#snippet metricInfo()}
@@ -52,6 +67,14 @@
 
 <div class="d-flex flex-row justify-content-between align-items-center mb-2">
   <h4 class="m-0">Weekly Summary</h4>
+  <!-- svelte-ignore a11y_consider_explicit_label -->
+  <button class="btn btn-light" bind:this={powerButton} onclick={() => powerPressed()}
+    ><i
+      class="bi bi-power svg-icon-power"
+      style="color: {!isPowered ? 'green' : 'red'};"
+      title="Turn: {!isPowered ? 'On' : 'Off'}"
+    ></i></button
+  >
   <DynamicDialog
     body={metricInfo}
     buttonLabel="Metric Info"

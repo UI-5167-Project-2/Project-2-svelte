@@ -53,7 +53,7 @@
     datasets: [
       {
         axis: 'y',
-        label: 'Steps',
+        label: 'Stairs',
         data: [],
         fill: false,
         borderWidth: 1,
@@ -98,8 +98,26 @@
     data: data,
     options: {
       scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Day of the Week',
+            font: {
+              size: 14,
+              weight: 'bold',
+            },
+          },
+        },
         y: {
           beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Stair Count',
+            font: {
+              size: 14,
+              weight: 'bold',
+            },
+          },
         },
       },
       plugins: {
