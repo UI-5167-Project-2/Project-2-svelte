@@ -364,7 +364,7 @@
 
 <!-- Top bar for control components -->
 <div class="device-container">
-  <div class="controls">
+  <div class="d-flex flex-row justify-content-between align-items-center">
     <div class="dropdown">
       <button
         class="btn btn-primary"
@@ -465,10 +465,6 @@
     flex: 1;
     display: flex;
     overflow: hidden;
-  }
-
-  #info {
-    margin-right: 0;
   }
 
   #action {
