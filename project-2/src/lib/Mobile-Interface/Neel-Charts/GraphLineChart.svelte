@@ -12,9 +12,18 @@
     Legend,
   } from 'chart.js';
 
-  Chart.register(LineController, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+  Chart.register(
+    LineController,
+    LineElement,
+    PointElement,
+    CategoryScale,
+    LinearScale,
+    Title,
+    Tooltip,
+    Legend
+  );
 
-  let {weeklyData = []} = $props();
+  let { weeklyData = [] } = $props();
 
   let chartEl = $state();
   let chart = $state();
@@ -77,7 +86,9 @@
     });
   }
 
-  onDestroy(() => { if (chart) chart.destroy(); });
+  onDestroy(() => {
+    if (chart) chart.destroy();
+  });
 </script>
 
 <div class="w-full h-[350px]">
