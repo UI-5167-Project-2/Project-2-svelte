@@ -1,12 +1,12 @@
 <script>
-  import { BeltData } from '../Data-Store.svelte.js';
+  import { BeltData } from '../../Data-Store.svelte.js';
   import GraphCalendar from './GraphCalendar.svelte';
   import GraphBarChart from './GraphBarChart.svelte';
   import GraphLineChart from './GraphLineChart.svelte';
   import { onMount } from 'svelte';
 
-  // Props (runes mode): include BeltData in destructure and default it to undefined so it's optional
-  let { showGraphs, onClose, BeltData: _BeltData = undefined } = $props();
+  // Props
+  let { showGraphs, onClose } = $props();
 
   // State
   let today = $state(new Date());
@@ -53,7 +53,7 @@
       const val = BeltData.getDay(d.toISOString());
       days.push({
         date: d.toLocaleDateString(),
-        ...(val || { BreathCount: 0, StepCount: 0, StairCount: 0 })
+        ...(val || { BreathCount: 0, StepCount: 0, StairCount: 0 }),
       });
     }
     weeklyData = days;
@@ -65,9 +65,9 @@
       const arr = [...BeltData.data];
       return arr.reduce(
         (acc, [, v]) => {
-          acc.BreathCount += (v?.BreathCount) ?? 0;
-          acc.StepCount += (v?.StepCount) ?? 0;
-          acc.StairCount += (v?.StairCount) ?? 0;
+          acc.BreathCount += v?.BreathCount ?? 0;
+          acc.StepCount += v?.StepCount ?? 0;
+          acc.StairCount += v?.StairCount ?? 0;
           return acc;
         },
         { BreathCount: 0, StepCount: 0, StairCount: 0 }
@@ -140,21 +140,13 @@
 
           <!-- Action Buttons -->
           <div class="flex flex-col items-center gap-3 mb-4">
-            <button onclick={() => (viewMode = 'line')} class="bar">
-              Weekly Line Graph
-            </button>
-            <button onclick={() => (viewMode = 'bar')} class="line">
-              Today’s Bar Chart
-            </button>
+            <button onclick={() => (viewMode = 'line')} class="bar"> Weekly Line Graph </button>
+            <button onclick={() => (viewMode = 'bar')} class="line"> Today’s Bar Chart </button>
           </div>
-
         {:else if viewMode === 'line'}
           <GraphLineChart {weeklyData} />
-
         {:else if viewMode === 'bar'}
-          <GraphBarChart
-            todayData={isToday(selectedDate) ? todayData : dailyData}
-          />
+          <GraphBarChart todayData={isToday(selectedDate) ? todayData : dailyData} />
         {/if}
       </section>
 

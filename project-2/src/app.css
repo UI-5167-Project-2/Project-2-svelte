@@ -22,7 +22,7 @@ h1 {
 }
 
 .content-view {
-  border: 1px solid black;
+  border: 1px solid darkgray;
   border-radius: 1.5em;
   padding: 1em;
   height: 100%;
