@@ -1,17 +1,23 @@
 <script>
   import { BeltData, getToday } from '../Data-Store.svelte.js';
+  import GraphDialog from './GraphDialog.svelte'
 
   // Metric Info modal control
   let showMetricInfo = $state(false);
+  let showGraphs = $state(false);
+  // Quick numbers and goals modal toggles (may be used elsewhere)
+  let showQuick = $state(false);
+  let showGoals = $state(false);
+
 
   // today's entry
   const today = $derived(
     [...BeltData.data].find((x) => x[0] === getToday().toISOString())[1]
   );
 
-  // Goals (hard-coded)
-  const STEPS_GOAL = 6000;
-  const STAND_GOAL = 50;
+  // Goals (hard-coded) — set to project requested defaults
+  const STEPS_GOAL = 12000;
+  const STAND_GOAL = 160;
 
   function pct(value, goal) {
     const v = Number(value ?? 0);
@@ -69,7 +75,10 @@
 <div class="parent-container">
   <h2>Mobile Interface</h2>
   <div class="quick-numbers-action">
+    <button class="qn-button" onclick={() => (showQuick = true)}>Quick Numbers</button>
+    <button class="goals-button" onclick={() => (showGoals = true)}>Goals</button>
     <button class="info-button" onclick={() => (showMetricInfo = true)}>Metric Info</button>
+    <button class="graph-button" onclick={() => (showGraphs = true)}>Graphs</button>
   </div>
 
   <div class="child-container-body">
@@ -176,6 +185,11 @@
   </div>
 {/if}
 
+{#if showGraphs}
+  <GraphDialog {BeltData} {showGraphs} onClose={() => showGraphs = false} />
+{/if}
+
+
 <style>
   .quick-numbers-action {
     margin: 0.5rem 0;
@@ -227,6 +241,16 @@
 
   .info-button {
     background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+
+  .graph-button {
+    background: #f12ba5;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
