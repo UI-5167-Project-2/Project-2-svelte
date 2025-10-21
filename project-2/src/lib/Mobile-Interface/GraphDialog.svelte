@@ -5,8 +5,8 @@
   import GraphLineChart from './GraphLineChart.svelte';
   import { onMount } from 'svelte';
 
-  // Props
-  let { showGraphs, onClose } = $props();
+  // Props (runes mode): include BeltData in destructure and default it to undefined so it's optional
+  let { showGraphs, onClose, BeltData: _BeltData = undefined } = $props();
 
   // State
   let today = $state(new Date());

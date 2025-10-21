@@ -186,7 +186,7 @@
 {/if}
 
 {#if showGraphs}
-  <GraphDialog {BeltData} {showGraphs} onClose={() => showGraphs = false} />
+  <GraphDialog {showGraphs} onClose={() => showGraphs = false} />
 {/if}
 
 
@@ -301,13 +301,6 @@
     border: none;
     font-size: 1.25rem;
     cursor: pointer;
-  }
-
-  .goal-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
   }
 
   .progress {
