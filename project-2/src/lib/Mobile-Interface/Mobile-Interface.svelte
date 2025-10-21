@@ -184,9 +184,7 @@
 {/if}
 
 <style>
-  .quick-numbers-action {
-    margin: 0.5rem 0;
-  }
+  /* header actions replaced quick-numbers-action; removed unused selector */
 
   /* table for embedded Quick Numbers */
   .qn-table {
@@ -290,6 +288,20 @@
 
   .qn-body {
     padding: 1rem;
+  }
+
+  /* Mobile Interface header layout */
+  .mi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .mi-header-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 
   .qn-footer {
