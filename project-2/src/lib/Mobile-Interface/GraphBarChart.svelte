@@ -13,69 +13,63 @@
 
   Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
+  let {todayData = { BreathCount: 0, StepCount: 0, StairCount: 0 }} = $props();
+
   let chartEl = $state();
   let chart = $state();
 
-  let {weeklyData = []} = $props();
+  $effect(() => {
+    if (todayData) drawChart();
+  });
 
-  let series = $derived([
-    { name: 'BreathCount', data: weeklyData.map((d) => d.BreathCount) },
-    { name: 'StepCount', data: weeklyData.map((d) => d.StepCount) },
-    { name: 'StairCount', data: weeklyData.map((d) => d.StairCount) },
-  ]);
+  function drawChart() {
+    if (chart) chart.destroy();
 
-  const type = 'bar'; 
+    const labels = ['BreathCount', 'StepCount', 'StairCount'];
+    const data = [todayData.BreathCount, todayData.StepCount, todayData.StairCount];
+    const colors = ['#ef4444', '#22c55e', '#a855f7'];
 
-  let config = $derived({
-    type: type,
-    data: {
-      labels: weeklyData.map((d) => d.date.getDay()),
-      datasets: [
-        { label: 'BreathCount', backgroundColor: '#ef4444', data: series[0].data },
-        { label: 'StepCount', backgroundColor: '#22c55e', data: series[1].data },
-        { label: 'StairCount', backgroundColor: '#a855f7', data: series[2].data },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'top', labels: { color: '#374151' } },
-        title: { display: true, text: 'Weekly Belt Data', color: '#111827', font: { size: 16, weight: 'bold' } },
+    chart = new Chart(chartEl, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Today',
+            data,
+            backgroundColor: colors,
+            borderRadius: 6,
+          },
+        ],
       },
-      scales: {
-        x: { ticks: { color: '#4b5563' }, grid: { color: '#e5e7eb' } },
-        y: {
-          ticks: { color: '#4b5563' },
-          grid: { color: '#e5e7eb' },
-          title: { display: true, text: 'Count', color: '#374151' },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: "Today's Belt Data",
+            color: '#111827',
+            font: { size: 16, weight: 'bold' },
+          },
+        },
+        scales: {
+          x: { ticks: { color: '#4b5563' }, grid: { color: '#e5e7eb' } },
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#4b5563' },
+            grid: { color: '#e5e7eb' },
+            title: { display: true, text: 'Count', color: '#374151' },
+          },
         },
       },
-    },
-  });
+    });
+  }
 
-  onMount(() => {
-    
-    chart = new Chart(chartEl, config);
-  });
-
-  $effect(() => {
-    if (chart) {
-      chart.data = config.data;
-      chart.options = config.options;
-      chart.update();
-    }
-  });
-
-  onDestroy(() => {
-    if (chart) chart.destroy();
-  });
+  onDestroy(() => { if (chart) chart.destroy(); });
 </script>
 
-<div class="w-full">
-  {#if weeklyData.length > 0}
-    <canvas bind:this={chartEl} class="w-full h-[350px]"></canvas> 
-  {:else}
-    <p class="text-center text-gray-500 mt-4">No data available.</p>
-  {/if}
+<div class="w-full h-[300px]">
+  <canvas bind:this={chartEl}></canvas>
 </div>
