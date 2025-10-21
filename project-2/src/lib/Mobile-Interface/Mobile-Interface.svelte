@@ -1,17 +1,16 @@
 <script>
   import { BeltData, getToday } from '../Data-Store.svelte.js';
 
-  let showQuick = $state(false);
-  let showGoals = $state(false);
+  // Metric Info modal control
   let showMetricInfo = $state(false);
 
-  // current day entry (keeps existing reactive pattern used in the project)
+  // today's entry
   const today = $derived(
     [...BeltData.data].find((x) => x[0] === getToday().toISOString())[1]
   );
 
   // Goals (hard-coded)
-  const STEPS_GOAL = 7000;
+  const STEPS_GOAL = 6000;
   const STAND_GOAL = 50;
 
   function pct(value, goal) {
@@ -21,7 +20,7 @@
     return Math.min(100, Math.round((v / g) * 100));
   }
 
-  // reactive helpers for today's progress (use $derived consistent with project)
+  // reactive helpers
   const stepsToday = $derived(today?.StepCount ?? 0);
   const standToday = $derived(
     typeof today?.StandMinutes !== 'undefined' && today?.StandMinutes !== null
@@ -29,7 +28,7 @@
       : null
   );
 
-  // compute totals across all entries
+  // totals and averages
   const totals = $derived(
     (() => {
       const arr = [...BeltData.data];
@@ -45,7 +44,6 @@
     })()
   );
 
-  // compute averages per day (rounded)
   const averages = $derived(
     (() => {
       const arr = [...BeltData.data];
@@ -70,24 +68,83 @@
 
 <div class="parent-container">
   <h2>Mobile Interface</h2>
-    <div class="quick-numbers-action">
-      <button class="qn-button" onclick={() => (showQuick = true)}>Quick Numbers</button>
-      <button class="goals-button" onclick={() => (showGoals = true)}>Goals</button>
-      <button class="info-button" onclick={() => (showMetricInfo = true)}>Metric Info</button>
+  <div class="quick-numbers-action">
+    <button class="info-button" onclick={() => (showMetricInfo = true)}>Metric Info</button>
   </div>
+
   <div class="child-container-body">
     <p>This will be further developed</p>
-    <h2>Today: (use if showing data from today)</h2>
+    <h2>Today</h2>
     <p>Date: {getToday().toISOString()}</p>
     <p>BreathCount: {today.BreathCount}</p>
     <p>StepCount: {today.StepCount}</p>
     <p>StairCount: {today.StairCount}</p>
-    <h2>All Data: (use if accessing all data)</h2>
-  <h3>Summary</h3>
-  <p>Total BreathCount: {totals.BreathCount}</p>
-  <p>Total StepCount: {totals.StepCount}</p>
-  <p>Total StairCount: {totals.StairCount}</p>
-  <p>Average / day — BreathCount: {averages.BreathCount}, StepCount: {averages.StepCount}, StairCount: {averages.StairCount}</p>
+
+    <h2>Summary</h2>
+    <table class="qn-table">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Total</th>
+          <th>Average / day</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>BreathCount</td>
+          <td>{totals.BreathCount}</td>
+          <td>{averages.BreathCount}</td>
+        </tr>
+        <tr>
+          <td>StepCount</td>
+          <td>{totals.StepCount}</td>
+          <td>{averages.StepCount}</td>
+        </tr>
+        <tr>
+          <td>StairCount</td>
+          <td>{totals.StairCount}</td>
+          <td>{averages.StairCount}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Goals</h2>
+    <table class="goals-table">
+      <thead>
+        <tr>
+          <th>Goal</th>
+          <th>Today</th>
+          <th>Progress</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Steps ({STEPS_GOAL})</td>
+          <td>{stepsToday}</td>
+          <td>
+            <div class="progress" aria-hidden="true">
+              <div class="progress-bar" style="width: {pct(stepsToday, STEPS_GOAL)}%"></div>
+            </div>
+            <span class="percent">{pct(stepsToday, STEPS_GOAL)}%</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Stand minutes ({STAND_GOAL})</td>
+          <td>{standToday !== null ? Math.round(standToday * 10) / 10 : '—'}</td>
+          <td>
+            {#if standToday !== null}
+              <div class="progress" aria-hidden="true">
+                <div class="progress-bar stand" style="width: {pct(standToday, STAND_GOAL)}%"></div>
+              </div>
+              <span class="percent">{pct(standToday, STAND_GOAL)}%</span>
+            {:else}
+              <span>—</span>
+            {/if}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
     <h3>Data Entries: {BeltData.publicData?.length}</h3>
     {#each [...BeltData.data] as day}
       <p>Date: {day[0]}</p>
@@ -97,67 +154,6 @@
     {/each}
   </div>
 </div>
-
-{#if showQuick}
-  <div class="qn-overlay" role="dialog" aria-modal="true">
-    <div class="qn-panel">
-      <header class="qn-header">
-  <h2>Quick Numbers — Summary</h2>
-  <button class="close" onclick={() => (showQuick = false)}>✕</button>
-      </header>
-      <section class="qn-body">
-        <h3>Totals</h3>
-        <p>Total BreathCount: {totals.BreathCount}</p>
-        <p>Total StepCount: {totals.StepCount}</p>
-        <p>Total StairCount: {totals.StairCount}</p>
-
-        <h3>Averages (per day)</h3>
-        <p>BreathCount: {averages.BreathCount}</p>
-        <p>StepCount: {averages.StepCount}</p>
-        <p>StairCount: {averages.StairCount}</p>
-      </section>
-      <footer class="qn-footer">
-  <button onclick={() => (showQuick = false)}>Close</button>
-      </footer>
-    </div>
-  </div>
-{/if}
-
-{#if showGoals}
-  <div class="qn-overlay" role="dialog" aria-modal="true">
-    <div class="qn-panel">
-      <header class="qn-header">
-        <h2>Goals</h2>
-        <button class="close" onclick={() => (showGoals = false)}>✕</button>
-      </header>
-      <section class="qn-body">
-        <h3>Steps</h3>
-        <div class="goal-row">
-          <div class="progress" aria-hidden="true">
-            <div class="progress-bar" style="width: {pct(stepsToday, STEPS_GOAL)}%"></div>
-          </div>
-          <p>{stepsToday} / {STEPS_GOAL} ({pct(stepsToday, STEPS_GOAL)}%)</p>
-        </div>
-
-        <h3>Stand</h3>
-        {#if standToday !== null}
-          <div class="goal-row">
-            <div class="progress" aria-hidden="true">
-              <div class="progress-bar stand" style="width: {pct(standToday, STAND_GOAL)}%"></div>
-            </div>
-            <p>{Math.round(standToday * 10) / 10} / {STAND_GOAL} ({pct(standToday, STAND_GOAL)}%)</p>
-          </div>
-        {:else}
-          <p><em>No live stand-minute data available for today.</em></p>
-          <p>Stand goal: <strong>{STAND_GOAL} stand minutes</strong></p>
-        {/if}
-      </section>
-      <footer class="qn-footer">
-        <button onclick={() => (showGoals = false)}>Close</button>
-      </footer>
-    </div>
-  </div>
-{/if}
 
 {#if showMetricInfo}
   <div class="qn-overlay" role="dialog" aria-modal="true">
@@ -185,23 +181,48 @@
     margin: 0.5rem 0;
   }
 
-  .qn-button {
-    background: #0d6efd;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
+  /* table for embedded Quick Numbers */
+  .qn-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
   }
 
-  .goals-button {
-    background: #198754;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
+  .qn-table th,
+  .qn-table td {
+    border: 1px solid #e9ecef;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
+  .qn-table thead th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+
+  /* Goals table */
+  .goals-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+
+  .goals-table th,
+  .goals-table td {
+    border: 1px solid #e9ecef;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .goals-table thead th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+
+  .percent {
     margin-left: 0.5rem;
+    font-weight: 600;
   }
 
   .info-button {
@@ -284,3 +305,4 @@
     background: linear-gradient(90deg, #198754, #63d69b);
   }
 </style>
+
