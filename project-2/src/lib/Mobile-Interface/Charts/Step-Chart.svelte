@@ -174,4 +174,4 @@
   }
 </script>
 
-<canvas bind:this={canvasElement} style="max-width: 45%" id="myChart"></canvas>
+<canvas bind:this={canvasElement} style="max-width: 45%; max-height: 380px;" id="myChart"></canvas>

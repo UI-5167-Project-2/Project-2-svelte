@@ -466,11 +466,57 @@
 
     <div>
       {#snippet body()}
-        <p>This is the device description for the smart belt</p>
+        <div>
+          <h2>Smart Belt Simulation Guide</h2>
+
+          <p>
+            The **Smart Belt** is a simulated wearable device designed to track activity and
+            posture. This interface allows you to test the belt's various operational states and
+            data outputs without physical interaction.
+          </p>
+
+          <hr />
+
+          <h3>Simulation Actions</h3>
+
+          <div>
+            <div>
+              <span>🚶 Start 10s Walk/Run</span>
+              <p>
+                Simulates continuous motion. This increases your **step count** and triggers
+                **walking animations** on the device visualization.
+              </p>
+            </div>
+
+            <div>
+              <span>🪜 Start 10s Walk up Stairs</span>
+              <p>
+                Simulates sustained vertical motion. This increases both your **step count** and
+                **stair count**, showing corresponding animations.
+              </p>
+            </div>
+
+            <div>
+              <span>🛋️ Simulate Sedentary Alert</span>
+              <p>
+                Simulates prolonged inactivity. After a threshold, this triggers a **sedentary
+                alert** and may show a **bad posture shake** on the visualization.
+              </p>
+            </div>
+
+            <div>
+              <span>🌙 Simulate Do Not Disturb Mode</span>
+              <p>
+                Simulates intentional periods of inactivity (e.g., sleep). The belt is marked
+                inactive during preset time ranges, and **no data or alerts** will be generated.
+              </p>
+            </div>
+          </div>
+        </div>
       {/snippet}
 
       <DynamicDialog
-        headerText="Smart Belt Description"
+        headerText="Info"
         hasFooter={false}
         close={() => {}}
         dialogButtonSeverity="secondary"

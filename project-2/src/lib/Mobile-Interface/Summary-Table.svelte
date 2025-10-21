@@ -1,11 +1,6 @@
 <script>
   import { BeltData } from '../Data-Store.svelte';
-  import { DeviceStatus } from '../Device-Status-Store.svelte';
-  import Device from '../Device-Viewer/Device.svelte';
   import DynamicDialog from '../shared-components/dialog/Dynamic-Dialog.svelte';
-
-  const isPowered = $derived(DeviceStatus.poweredOn);
-  let powerButton;
 
   // totals and averages
   const totals = $derived(
@@ -43,23 +38,13 @@
       };
     })()
   );
-
-  function powerPressed() {
-    if (powerButton) {
-      powerButton.disabled = true;
-      setTimeout(() => {
-        powerButton.disabled = false;
-      }, 1500);
-    }
-    DeviceStatus.changePower();
-  }
 </script>
 
 {#snippet metricInfo()}
   <h3>Tracked Metrics</h3>
-  <p><strong>BreathCount</strong>: Number of breaths counted for the day.</p>
-  <p><strong>StepCount</strong>: Number of steps recorded for the day.</p>
-  <p><strong>StairCount</strong>: Number of stair-climbing events recorded for the day.</p>
+  <p><strong>Breath Count</strong>: Number of breaths counted for the day.</p>
+  <p><strong>Step Count</strong>: Number of steps recorded for the day.</p>
+  <p><strong>Stair Count</strong>: Number of stair-climbing events recorded for the day.</p>
   <p>
     These metrics are collected from the device simulation and aggregated per-day in the data store.
   </p>
@@ -67,23 +52,14 @@
 
 <div class="d-flex flex-row justify-content-between align-items-center mb-2">
   <h4 class="m-0">Weekly Summary</h4>
-  <div class="d-flex flex-row gap-2">
-    <button class="btn btn-light" bind:this={powerButton} onclick={() => powerPressed()}
-      ><i
-        class="bi bi-power svg-icon-power"
-        style="color: {!isPowered ? 'green' : 'red'};"
-        title="Turn: {!isPowered ? 'On' : 'Off'}"
-      ></i>Power</button
-    >
-    <DynamicDialog
-      body={metricInfo}
-      buttonLabel="Metric Info"
-      dialogButtonSeverity="secondary"
-      headerText="Metric Info"
-      hasFooter={false}
-      close={() => {}}
-    />
-  </div>
+  <DynamicDialog
+    body={metricInfo}
+    buttonLabel="Metric Info"
+    dialogButtonSeverity="secondary"
+    headerText="Metric Info"
+    hasFooter={false}
+    close={() => {}}
+  />
 </div>
 <table class="qn-table">
   <thead>
