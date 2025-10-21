@@ -1,7 +1,9 @@
 <!-- 
   @component
-  A number line representing a 24-hour time span with support for up to two time ranges
+  A number line representing a 24-hour time span with support for up to two time ranges. When ranges overlap,  
+  they show an alert and can disable a button in its parent component
   @param {Array} ranges - Array of time ranges [{start: number, end: number}, ...] (max 2 ranges)
+  @param {bool} disableButton - Bindable boolean. True when time ranges are invalid in some way.
   @param {string} label - Label for the number line
  -->
 <script>
