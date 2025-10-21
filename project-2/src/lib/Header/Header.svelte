@@ -4,9 +4,6 @@
 
 <div class="header">
   <h1>Smart Belt</h1>
-  <div class="button-container">
-    <DeviceDescriptionDialog />
-  </div>
 </div>
 
 <style>
@@ -17,9 +14,5 @@
     flex-direction: row;
     justify-content: space-between;
     margin-bottom: 0.5em;
-  }
-
-  .header > .button-container {
-    margin: auto 0;
   }
 </style>

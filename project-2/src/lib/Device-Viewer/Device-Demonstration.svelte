@@ -4,23 +4,13 @@
 
   // --- Props Received from Parent (App.svelte) ---
   let {
-    stepsCount,
-    stairsCount,
-    breathCount,
-    breathingRate,
     postureStatus,
-    walkButtonText,
-    sedentaryButtonText,
-    walkButtonDisabled,
-    sedentaryButtonDisabled,
     bodyShapeFill,
     pantsShapeFill,
     pantsShapeStroke,
     beltFill,
     buckleFrameFill,
     bucklePinFill,
-    handleWalk = null,
-    handleSedentary = null,
     registerElements = null,
   } = $props();
 
@@ -140,22 +130,17 @@
   });
 </script>
 
-<div class="container child-container-body">
-  <div class="controls">
-    <button onclick={handleWalk} disabled={walkButtonDisabled}>{walkButtonText}</button>
-    <button onclick={handleSedentary} disabled={sedentaryButtonDisabled}
-      >{sedentaryButtonText}</button
-    >
-  </div>
-
+<div class="container">
+  <!-- the guy -->
   <svg
-    style="min-width: 300px; min-height: 360px;"
-    width="300"
-    height="360"
+    width="100%"
+    height="100%"
     viewBox="0 0 100 120"
     xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid meet"
   >
     <defs>
+      <!-- SVG Gradients -->
       <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" style="stop-color: #b0e0ed; stop-opacity: 1" />
         <stop offset="50%" style="stop-color: #a0d2eb; stop-opacity: 1" />
@@ -183,6 +168,7 @@
       </linearGradient>
     </defs>
 
+    <!-- Shirt -->
     <path
       bind:this={bodyShape}
       d="M 20 0 L 20 45 L 80 45 L 80 0 Z"
@@ -192,6 +178,7 @@
       transform-origin="50 30"
     ></path>
 
+    <!-- Pants -->
     <path
       bind:this={pantsShape}
       d="M 80 45 L 80 55 L 80 90 C 80 100, 70 105, 53 105 L 53 80 L 48 80 L 48 105 C 30 105, 20 100, 20 90 L 20 55 L 20 45 Z"
@@ -201,9 +188,11 @@
       transform-origin="50 75"
     ></path>
 
+    <!-- Belt -->
     <rect bind:this={belt} x="20" y="52" width="60" height="10" fill={beltFill} rx="3" ry="3"
     ></rect>
 
+    <!-- Belt Buckle -->
     <rect
       bind:this={buckleFrame}
       x="42"
@@ -218,6 +207,7 @@
       transform-origin="50 57"
     ></rect>
 
+    <!-- Belt Pin -->
     <rect
       bind:this={bucklePin}
       x="48"
@@ -232,26 +222,6 @@
       transform-origin="50 57"
     ></rect>
   </svg>
-
-  <div class="ui-panel">
-    <h3>Live Activity Data</h3>
-    <div class="data-point">
-      Steps: <span id="stepsCount" class="highlight">{stepsCount}</span>
-    </div>
-    <div class="data-point">
-      Stairs: <span id="stairsCount" class="highlight">{stairsCount}</span>
-    </div>
-    <div class="data-point">
-      Breaths: <span id="breathCount" class="highlight">{breathCount}</span>
-    </div>
-    <div class="data-point">
-      Breaths/min: <span id="breathingRate" class="highlight">{breathingRate}</span>
-    </div>
-    <div class="data-point">
-      Posture/Status:
-      <span id="postureStatus" class="highlight">{postureStatus}</span>
-    </div>
-  </div>
 </div>
 
 <style>
@@ -259,50 +229,28 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 1em;
+    padding: 1em 0em;
+
     flex: 1; /* Allows it to take equal space */
     min-width: 300px;
-  }
-
-  .controls {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-  }
-
-  button {
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    background-color: #3498db;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition:
-      background-color 0.3s ease,
-      transform 0.1s ease;
-  }
-
-  button:hover {
-    background-color: #2980b9;
-  }
-
-  button:active {
-    transform: scale(0.98);
-  }
-
-  button:disabled {
-    background-color: #bdc3c7;
-    cursor: not-allowed;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevent scrolling */
+    box-sizing: border-box; /* Include padding in height calculation */
   }
 
   svg {
     border: 2px solid #bdc3c7;
     border-radius: 8px;
     background-color: #ecf0f1;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    flex: 1; /* Allow SVG to shrink if needed */
+    min-height: 0;
+    object-fit: contain;
   }
 
   path,
@@ -312,30 +260,5 @@
     transition:
       fill 0.5s ease-in-out,
       stroke 0.5s ease-in-out;
-  }
-
-  .ui-panel {
-    background-color: #ecf0f1;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-    width: 100%;
-    text-align: center;
-  }
-
-  h3 {
-    margin-top: 0;
-    color: #2c3e50;
-  }
-
-  .data-point {
-    font-size: 1.2rem;
-    margin: 8px 0;
-  }
-
-  .highlight {
-    font-weight: bold;
-    color: #e74c3c;
   }
 </style>
