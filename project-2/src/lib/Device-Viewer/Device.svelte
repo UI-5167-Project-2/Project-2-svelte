@@ -8,6 +8,7 @@
   import InLineDialog from '../shared-components/dialog/In-Line-Dialog.svelte';
   import InLineDialogOpenButton from '../shared-components/dialog/In-Line-Dialog-Open-Button.svelte';
   import DynamicDialog from '../shared-components/dialog/Dynamic-Dialog.svelte';
+  import NumberLine from '../shared-components/Number-Line.svelte'
 
   // --- State Variables (All centralized here) ---
   let stepsCount = $state(0);
@@ -225,6 +226,16 @@
     }, sedentaryDuration);
   }
 
+  function handleDoNotDisturb(){
+
+
+
+    setTimeout(() => {
+        stopAllActivity();
+      }, 2000);
+    
+  }
+
   // --- Svelte Lifecycle Hooks ---
   onMount(() => {
     // Initial setup, the full startBreathingAnimation will run once elements are registered.
@@ -262,7 +273,7 @@
               <InLineDialogOpenButton generatedID="{simulation.id}dialog" buttonIcon="bi bi-info-circle fs-5 " />
 
               <button
-                class="btn btn-primary"
+                class="btn btn-primary fs-5"
                 id="action"
                 onclick={() => handleAction(simulation.action)}
                 disabled={simulation.disabled}
@@ -277,7 +288,7 @@
 
     <div class="status-message">
       
-        {postureStatus}
+      {postureStatus}
     </div>
 
     <div>
@@ -286,14 +297,14 @@
       {/snippet}
 
       <DynamicDialog
-        dialogButtonSeverity="secondary"
         headerText="Smart Belt Description"
         hasFooter={false}
         close={() => {}}
+        dialogButtonSeverity="secondary"
         buttonIcon="bi bi-info-circle fs-5"
         {body}
       />
-      
+        
     </div>
   </div>
 
@@ -310,11 +321,6 @@
     />
   {/each}
 
-  {#snippet deviceInfo()}
-    <p>insert description here</p>
-  {/snippet}
-
-
   <!-- Component for the guy -->
   <div class="demonstration-container">
     <DeviceDemonstration
@@ -328,6 +334,10 @@
       registerElements={(e) => registerElements(e)}
     />
   </div>
+
+  <NumberLine></NumberLine>
+
+
 </div>
 
 <style>
@@ -358,7 +368,6 @@
   .controls {
     top: 10px;
     left: 10px;
-    z-index: 10;
     display: flex;
     flex-direction: row;
     align-items: center;

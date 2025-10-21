@@ -15,8 +15,4 @@
     justify-content: space-between;
     margin-bottom: 0.5em;
   }
-
-  .header > .button-container {
-    margin: auto 0;
-  }
 </style>
