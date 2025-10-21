@@ -17,6 +17,9 @@
   let breathCount = $state(0);
   let postureStatus = $state('Standing/Active');
 
+  let invalidTimeRange = $state(false);
+  let timeRanges = $state([]); // Add this to track the time ranges
+
   const sim_list = $state([
     // Add new actions in this format whenever a new function is created.
     {
@@ -36,6 +39,14 @@
       disabled: false,
     },
     {
+      id: "DND",
+      action: handleDoNotDisturb,
+      label: 'Simulate Do Not Disturb Mode',
+      description:
+        'Simulates a day through wearing the belt, given a few ranges of time. During these ranges, the belt will be considered inactive. ',
+      disabled: false,
+    },
+    {
       id: "test",
       action: () => {
         sim_list.forEach((button) => (button.disabled = false));
@@ -45,6 +56,15 @@
       disabled: false,
     },
   ]);
+
+  // Effect to update DND button based on invalidTimeRange and timeRanges
+  $effect(() => {
+    const dndButton = sim_list.find(button => button.id === "DND");
+    if (dndButton) {
+      // Disable if ranges overlap OR if no ranges are defined
+      dndButton.disabled = invalidTimeRange || timeRanges.length === 0;
+    }
+  });
 
   // State for DeviceViewer
   let viewAngleText = $state('Front (0°, 0°)');
@@ -332,10 +352,13 @@
       {buckleFrameFill}
       {bucklePinFill}
       registerElements={(e) => registerElements(e)}
-    />
+    />  
   </div>
 
-  <NumberLine></NumberLine>
+  <NumberLine
+    bind:disableButton={invalidTimeRange}
+    bind:ranges={timeRanges}
+  />
 
 
 </div>

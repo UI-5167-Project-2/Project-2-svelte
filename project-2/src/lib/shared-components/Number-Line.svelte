@@ -7,8 +7,8 @@
 <script>
   let { 
     ranges = $bindable([]), 
+    disableButton = $bindable(false),
     label = '24-Hour Timeline',
-
   } = $props();
   
   let dragging = null; // {rangeIndex: number, type: 'start'|'end'}
@@ -118,15 +118,19 @@
   // Check if ranges have any overlaps
   function hasOverlap() {
     if (ranges.length < 2) return false;
-    return rangesOverlap(ranges[0], ranges[1]);
+    return rangesOverlap(ranges[0], ranges[1])
   }
+
+  $effect(() => {
+    disableButton = hasOverlap();
+  })
 
 </script>
 
 <div class="number-line-container">
   <div style="display: flex; flex-direction: row; gap: 1em; align-items: center">
     Do Not Disturb Hours: 
-    {#if hasOverlap()}
+    {#if disableButton}
       <div class="alert alert-warning" role="alert">
         Time ranges overlap
       </div>
