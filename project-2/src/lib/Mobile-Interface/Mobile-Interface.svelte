@@ -5,9 +5,6 @@
   // Metric Info modal control
   let showMetricInfo = $state(false);
   let showGraphs = $state(false);
-  // Quick numbers and goals modal toggles (may be used elsewhere)
-  let showQuick = $state(false);
-  let showGoals = $state(false);
 
 
   // today's entry
@@ -16,8 +13,8 @@
   );
 
   // Goals (hard-coded) — set to project requested defaults
-  const STEPS_GOAL = 12000;
-  const STAND_GOAL = 160;
+  const STEPS_GOAL = 6000;
+  const STAND_GOAL = 50;
 
   function pct(value, goal) {
     const v = Number(value ?? 0);
@@ -73,12 +70,12 @@
 </script>
 
 <div class="parent-container">
-  <h2>Mobile Interface</h2>
-  <div class="quick-numbers-action">
-    <button class="qn-button" onclick={() => (showQuick = true)}>Quick Numbers</button>
-    <button class="goals-button" onclick={() => (showGoals = true)}>Goals</button>
-    <button class="info-button" onclick={() => (showMetricInfo = true)}>Metric Info</button>
-    <button class="graph-button" onclick={() => (showGraphs = true)}>Graphs</button>
+  <div class="mi-header">
+    <h2>Mobile Interface</h2>
+    <div class="mi-header-actions">
+      <button class="info-button" onclick={() => (showMetricInfo = true)}>Metric Info</button>
+      <button class="graph-button" onclick={() => (showGraphs = true)}>Graphs</button>
+    </div>
   </div>
 
   <div class="child-container-body">
@@ -191,9 +188,7 @@
 
 
 <style>
-  .quick-numbers-action {
-    margin: 0.5rem 0;
-  }
+  /* header actions replaced quick-numbers-action; removed unused selector */
 
   /* table for embedded Quick Numbers */
   .qn-table {
@@ -287,6 +282,20 @@
 
   .qn-body {
     padding: 1rem;
+  }
+
+  /* Mobile Interface header layout */
+  .mi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .mi-header-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 
   .qn-footer {
