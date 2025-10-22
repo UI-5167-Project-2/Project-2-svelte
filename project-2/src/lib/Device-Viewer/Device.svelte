@@ -22,6 +22,24 @@
   let timeRanges = $state([]); // Track time ranges
   let currentSimulationTime = $state(0);
 
+  const today = $derived([...BeltData.data].find((x) => x[0] === getToday().toISOString())[1]);
+
+  let totalCaloriesBurned = $state(0);
+  let currentHeartRate = $derived(() => {
+    switch (postureStatus) {
+      case 'Climbing Stairs':
+        return 24;
+      case 'Walking':
+        return 18;
+      default:
+        return 12;
+    }
+  });
+
+  $effect(() => {
+    totalCaloriesBurned = calculateTotalCaloriesBurned(today.StepCount, today.StairCount);
+  });
+
   const statusText = $derived(DeviceStatus.getStatus());
 
   const sim_list = $state([
@@ -416,6 +434,54 @@
     if (sedentaryTimeout) clearTimeout(sedentaryTimeout);
     if (breathingInterval) clearInterval(breathingInterval);
   });
+
+  function caloriesFromMET(met, weightKg, durationHours) {
+    return met * weightKg * durationHours;
+  }
+
+  // 2) Steps -> walking calories via distance + MET
+  function caloriesFromSteps(
+    steps,
+    weightKg,
+    strideMeters = 0.78, // average stride length (m) — let user adjust
+    walkingMET = 3.5, // default MET for moderate walk
+    speedKmH = 5 // speed to compute duration if you want
+  ) {
+    const distanceMeters = steps * strideMeters;
+    const distanceKm = distanceMeters / 1000;
+    const durationHours = distanceKm / speedKmH; // hours
+    const kcal = caloriesFromMET(walkingMET, weightKg, durationHours);
+    return {
+      kcal,
+      distanceKm,
+      durationHours,
+      kcalPerStep: kcal / steps,
+    };
+  }
+
+  // 3) Stair-climbing using potential energy
+  function caloriesFromStairsUp(
+    upSteps,
+    weightKg,
+    stepRiseMeters = 0.17, // typical riser (m)
+    g = 9.81,
+    humanEfficiency = 0.25 // 25% efficiency
+  ) {
+    const heightMeters = upSteps * stepRiseMeters;
+    const joules = weightKg * g * heightMeters;
+    const mechanicalKcal = joules / 4184;
+    const metabolicKcal = mechanicalKcal / humanEfficiency;
+    return {
+      metabolicKcal,
+      mechanicalKcal,
+      heightMeters,
+      joules,
+    };
+  }
+
+  function calculateTotalCaloriesBurned(steps, stairs) {
+    return caloriesFromSteps(steps, 145).kcal + caloriesFromStairsUp(stairs, 145).metabolicKcal;
+  }
 </script>
 
 <!-- Top bar for control components -->
@@ -460,8 +526,18 @@
       </ul>
     </div>
 
-    <div class="status-message">
-      {postureStatus}
+    <div class="status-message d-flex flex-column">
+      {#if DeviceStatus.poweredOn && DeviceStatus.getStatus() == 'wifi'}
+        <span>
+          Activity: {postureStatus}
+        </span>
+        <div class="d-flex flex-row">
+          <span class="border-dark border-end pe-2 me-2"
+            >{totalCaloriesBurned.toFixed(2)} Kcal 🔥
+          </span>
+          <span>{currentHeartRate()} ❤️ BPM</span>
+        </div>
+      {/if}
     </div>
 
     <div>
