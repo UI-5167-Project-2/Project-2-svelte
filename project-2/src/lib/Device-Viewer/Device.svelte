@@ -184,6 +184,12 @@
       button.disabled = false;
     });
 
+    const dndButton = sim_list.find((button) => button.id === 'DND');
+    if (dndButton) {
+      // Disable if ranges overlap OR if no ranges are defined
+      dndButton.disabled = invalidTimeRange || timeRanges.length === 0;
+    }
+
     postureStatus = 'Standing/Active';
     breathingRate = 12;
 
