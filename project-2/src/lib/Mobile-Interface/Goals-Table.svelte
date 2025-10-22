@@ -15,11 +15,7 @@
 
   // reactive helpers
   const stepsToday = $derived(today?.StepCount ?? 0);
-  const standToday = $derived(
-    typeof today?.StandMinutes !== 'undefined' && today?.StandMinutes !== null
-      ? today.StandMinutes
-      : null
-  );
+  const standToday = $derived(today?.StandMinute ?? 0);
 </script>
 
 <h4>Goals</h4>

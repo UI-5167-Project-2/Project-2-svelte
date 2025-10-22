@@ -216,7 +216,7 @@
     // Each click counts as 10 seconds towards the stand goal. Store as minutes (fractional).
     if (today && DeviceStatus.getStatus() === 'wifi') {
       const addedMinutes = durationSeconds / 60; // 10 seconds -> 0.166666...
-      today.StandMinutes = (today.StandMinutes ?? 0) + addedMinutes;
+      today.StandMinute = (today.StandMinute ?? 0) + addedMinutes;
       BeltData.updateDay(getToday().toISOString(), today);
     }
     const initialSteps = today?.StepCount ?? stepsCount;
@@ -263,7 +263,7 @@
     // Each click counts as 10 seconds towards the stand goal. Store as minutes (fractional).
     if (today && DeviceStatus.getStatus() === 'wifi') {
       const addedMinutes = (durationSeconds * 6) / 60; // 10 seconds -> 0.166666...
-      today.StandMinutes = (today.StandMinutes ?? 0) + addedMinutes;
+      today.StandMinute = (today.StandMinute ?? 0) + addedMinutes;
       BeltData.updateDay(getToday().toISOString(), today);
     }
     const initialStairs = today.StairCount ?? stairsCount;
