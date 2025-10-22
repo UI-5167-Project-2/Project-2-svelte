@@ -23,6 +23,12 @@
 
   let showRange = $state(!switchEnable);
 
+  $effect(() => {
+    if (!showRange) {
+      ranges = [];
+    }
+  });
+
   // Ensure we have at most 2 ranges
   $effect(() => {
     if (ranges.length > 2) {
