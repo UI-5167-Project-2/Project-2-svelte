@@ -34,9 +34,11 @@
       <div class="btn btn-light" style="pointer-events: none">
         {status == 'wifi'
           ? '🟢 Connected'
-          : status == 'wifi-1' || status == 'wifi-2'
+          : isPowered && (status == 'wifi-1' || status == 'wifi-2')
             ? '🟡 Connecting'
-            : '🔴 Disconnected'}
+            : !isPowered && (status == 'wifi-1' || status == 'wifi-2')
+              ? '🟡 Disconnecting'
+              : '🔴 Disconnected'}
       </div>
     </div>
   </div>
