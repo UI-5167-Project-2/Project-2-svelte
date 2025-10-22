@@ -56,7 +56,15 @@
         label: 'Stairs',
         data: [],
         fill: false,
-        borderWidth: 1,
+        backgroundColor: [
+          'rgba(0, 0, 0, 0.1)',
+          'rgba(0, 0, 0, 0.1)',
+          'rgba(0, 0, 0, 0.1)',
+          'rgba(0, 0, 0, 0.1)',
+          'rgba(0, 0, 0, 0.1)',
+          'rgba(0, 0, 0, 0.1)',
+          'rgba(75, 192, 192, 0.2)',
+        ],
       },
       {
         type: 'line',
